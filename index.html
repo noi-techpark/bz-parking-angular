@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html ng-app="parking">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta property="og:title" content="Bolzano parking">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="http://parking.bz.it">
+  <meta property="og:image" content="http://parking.bz.it/parkbzNew/static/images/logo-bolzano-parking.png">
+  <meta property="og:description" content="Real-time parking lot availability in the city of Bolzano">
+  <meta property="og:site_name" content="Bolzano parking">
+  <title>BZ Parking</title>
+  <link href="standard.css" rel="stylesheet" media="screen,projection,print" type="text/css">
+  <link href="standard-base.css" rel="stylesheet" media="screen,projection,print" type="text/css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" type="text/css">
+  <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <header class="header" id="header">
+    <div class="aux">
+      <h1 class="logo" id="logo"><a href="https://parking.bz.it/"><img src="images/logo-bolzano-parking.png" alt="Bolzano Parking Beta"> <span class="alt">Bolzano Parking</span></a><a href="" class="beta round">Beta</a></h1>
+    </div>
+  </header>
+
+  <main ng-controller="parking" id="main" class="main">
+    <div ng-init="getStations();page='list'" class ="aux">
+      <div class="actions">
+        <div class="time" data-w2p_remote="/get_times" id="c753345701477"></div>
+        <div class="notice-time" style="display: none;">Previsione aggiornata alle <span class="msg"></span></div>
+        <div class="switcher controls box round">
+          <ul>
+            <li><a href="javascript:void(0)" ng-click="page='list'" ng-class="{'active':page=='map'}" class="grid">Visualizzazione griglia</a></li>
+            <li><a href="javascript:void(0)" ng-click="page='map'" ng-class="{'active':page=='list'}" class="map ">Visualizzazione mappa</a></li>
+          </ul>
+        </div>
+      </div>
+      <div ng-show="page=='list'">
+        <div ng-repeat="station in stations|orderBy:'current.timestamp':true" class="carpark box">
+          <div class="carpark-aux">
+            <h2>{{station.name}}</h2>
+            <ul>
+              <li class="address"><a href="">{{station.mainaddress}}</a></li>
+              <li class="phone"><span>{{station.phonenumber}}</span></li>
+
+            </ul>
+            <div class="slots"><strong class="available-slots" ng-class="{'available':station.current.value>10,'almost-full':station.current.value<=15,full:station.current.value==0}">
+              <span class="number">{{station.current.value}}</span>
+              <span class="value_type">Free slots</span><span class="value_time"></span>
+            </strong> out of <strong>{{station.capacity}} Available slots</strong><br/>
+            updated <span am-time-ago="station.current.timestamp"></span>
+
+            <div class="updating" style="display: none;"></div></div>
+            <!-- <div class="forecast">
+            <h3 data-id="108" data-url="/prediction.json?parking_id=108" data-slots="1015">24h forecast</h3>
+            <div class="graph" id="graph_108" style="height: 136px">
+          </div>
+          <div class="updating"></div>
+        </div> -->
+      </div>
+    </div>
+  </div>
+  <div ng-show="page=='map'">
+    <leaflet center="southTyrol" layers="layers" width="100%" height="800px" geojson="geojson" ></leaflet>
+  </div>
+</div>
+</main>
+</body>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-sanitize/1.6.6/angular-sanitize.min.js"></script>
+<script type="text/javascript" src="app.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-leaflet-directive/0.10.0/angular-leaflet-directive.min.js "></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-moment/1.1.0/angular-moment.min.js"></script>
+</html>
