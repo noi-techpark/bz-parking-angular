@@ -101,14 +101,14 @@ author: Madeincima.it
         .controls a.map{background-position:-28px -20px;}
         .controls a.locate{background-position:-64px 9px;border-right:1px solid #e8e8e8}
         .controls a.update{background-position:-103px 9px}
-        .actions .switcher .active.grid{background-color:#F5F5F5;background-position:11px 9px;cursor:auto;-webkit-border-top-left-radius:5px;-moz-border-top-left-radius:5px;border-top-left-radius:5px;-webkit-border-bottom-left-radius:5px;-moz-border-bottom-left-radius:5px;border-bottom-left-radius:5px}
-        .actions .switcher .active.map{background-color:#F5F5F5;background-position:-28px 9px;cursor:auto;-webkit-border-top-right-radius:5px;-moz-border-top-right-radius:5px;border-top-right-radius:5px;-webkit-border-bottom-right-radius:5px;-moz-border-bottom-right-radius:5px;border-bottom-right-radius:5px}
+        .actions .switcher .active.grid{background-color:#F5F5F5;background-position:11px 9px;-webkit-border-top-left-radius:5px;-moz-border-top-left-radius:5px;border-top-left-radius:5px;-webkit-border-bottom-left-radius:5px;-moz-border-bottom-left-radius:5px;border-bottom-left-radius:5px}
+        .actions .switcher .active.map{background-color:#F5F5F5;background-position:-28px 9px;-webkit-border-top-right-radius:5px;-moz-border-top-right-radius:5px;border-top-right-radius:5px;-webkit-border-bottom-right-radius:5px;-moz-border-bottom-right-radius:5px;border-bottom-right-radius:5px}
 
 		.actions .other{position:absolute;top:0;right:0%;margin-left:-40px}
 
 	.carpark{float:left;width:100%;position:relative;margin-bottom:20px}
 	.carpark-aux{border:3px solid #fff;padding:.9em 3% 0 3%;}
-		.carpark h2{white-space: nowrap;padding-right:50%;line-height:100%;font-family:"titillium_websemibold",Arial,sans-serif;font-size:1.7em;font-weight:normal;margin:0.4em 0 1.1em 0}
+		.carpark h2{padding-right:150px;line-height:100%;font-family:"titillium_websemibold",Arial,sans-serif;font-size:1.7em;font-weight:normal;margin:0.4em 0 1.1em 0}
 		.carpark li{margin-bottom:1.2em;font-size:1.1em;padding-left:22px;line-height:150%;}
 		.carpark li a{font-size:1em;}
 		.carpark li.address{background:url(images/ico-address.gif) 0 0 no-repeat;width:50%}
@@ -250,7 +250,7 @@ padding-bottom: 0;
 	a.beta{bottom:23px;left:280px;font-size:1em;padding:0.3em .7em}
 	.carpark{width:49%}
 	.odd{margin-right:2%}
-	.main{padding-top:100px;padding-bottom:3.5em}
+	.main{padding-top:96px;padding-bottom:3.5em}
 
 	.share{position:absolute;top:120px;width:100%;display:none}
 	.addthisbox{margin:0 auto;}
@@ -389,7 +389,7 @@ only screen and (min-resolution: 192dpi),
 only screen and (min-resolution: 2dppx){
 
 	.actions .time span{background-image:url(images/bg-arrow-thin@2x.png);background-size:13px 41px}
-	.actions .controls a{background-image:url(../images/ico-controls@2x.png);background-size:134px 50px}
+	.actions .controls a{background-image:url(images/ico-controls@2x.png);background-size:134px 50px}
 
 }
 
@@ -425,14 +425,14 @@ only screen and (min-resolution: 2dppx){
 #map .carpark{width:auto;min-width:300px;float:none;margin:0;position:static;}
 #map .carpark-aux{padding:0;border:0;font-size:1.2em;}
 #map .carpark li.address{width:50%;margin-bottom:1.8em}
-#map .slots{right:27px}
+#map .slots{right:5px}
 #map .available-slots{padding-top: 0.4em}
 #map .available-slots .number{margin-bottom:0}
 #map .forecast h3{right:6px;to:-2.9em}
 #map .leaflet-container a.leaflet-popup-close-button{border:0}
 #map a{color:#009CDD}
 #map.leaflet-container a.leaflet-popup-close-button{border:0}
-#map .carpark h2{margin:0.5em 0 1em 0;padding:0.2em;font-size:1.55em;}
+#map .carpark h2{margin:0.5em 0 1em 0;padding:0.2em;font-size:1.1em;}
 #map .carpark li{margin-bottom:1.5em}
 #map .carpark li.phone{margin-bottom:1.2em}
 
@@ -452,7 +452,15 @@ only screen and (min-resolution: 2dppx){
     padding-right: 2px;
     padding-left: 2px;
 }
-
+.ct-series-a .ct-line{
+    stroke:#009cdd;
+    stroke-dasharray:5,5;
+    stroke-width:2px;
+}
+.ct-series-a .ct-point{
+    stroke:#009cdd;
+    stroke-opacity:0.7;
+}
 .survey-btn {
     background: #0a99d4;
 }
