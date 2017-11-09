@@ -6,13 +6,15 @@
   <meta property="og:title" content="Bolzano parking">
   <meta property="og:type" content="article">
   <meta property="og:url" content="http://parking.bz.it">
-  <meta property="og:image" content="http://parking.bz.it/parkbzNew/static/images/logo-bolzano-parking.png">
+  <meta property="og:image" content="http://parking.bz.itimages/logo-bolzano-parking.png">
   <meta property="og:description" content="Real-time parking lot availability in the city of Bolzano">
   <meta property="og:site_name" content="Bolzano parking">
   <title>BZ Parking</title>
   <link href="standard.css" rel="stylesheet" media="screen,projection,print" type="text/css">
   <link href="standard-base.css" rel="stylesheet" media="screen,projection,print" type="text/css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" type="text/css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css" type="text/css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css" type="text/css">
   <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
 </head>
 <body>
@@ -23,7 +25,7 @@
   </header>
 
   <main ng-controller="parking" id="main" class="main">
-    <div ng-init="getStations();page='list'" class ="aux">
+    <div ng-init="getStations();page='list'">
       <div class="actions">
         <div class="time" data-w2p_remote="/get_times" id="c753345701477"></div>
         <div class="notice-time" style="display: none;">Previsione aggiornata alle <span class="msg"></span></div>
@@ -34,7 +36,7 @@
           </ul>
         </div>
       </div>
-      <div ng-show="page=='list'">
+      <div ng-show="page=='list'" class="aux listing">
         <div ng-repeat="station in stations|orderBy:'current.timestamp':true" class="carpark box">
           <div class="carpark-aux">
             <h2>{{station.name}}</h2>
@@ -59,14 +61,36 @@
       </div>
     </div>
   </div>
-  <div ng-show="page=='map'">
-    <leaflet center="southTyrol" layers="layers" width="100%" height="800px" geojson="geojson" ></leaflet>
+  <div ng-show="page=='map'" id="map">
+    <leaflet center="southTyrol" geojson-nested="true" width="100vw" height="1000px" geojson="geojson" ></leaflet>
   </div>
 </div>
 </main>
+<footer id="footer-1" class="footer-1">
+  <div class="aux">
+    <h3>The experimental apps of the<strong>Municipality of Bolzano</strong></h3>
+    <ul>
+      <li class="bzparking"><a href="http://parking.bz.it/" target="_blank"><img src="images/logo-bzparking.png" alt="BZ Parking"></a></li>
+      <li class="bzbus"><a href="http://bus.bz.it" target="_blank"><img src="images/logo-bzbus.png" alt="BZ Bus"></a></li>
+      <li class="bztraffic"><a href="http://traffic.bz.it/" target="_blank"><img src="images/logo-bztraffic.png" alt="BZ Traffic"></a></li>
+    </ul>
+  </div>
+</footer>
+<footer id="footer-2" class="footer-2">
+    	<div class="aux">
+		    <div class="aux2">
+		    	<ul>
+					<li class="first "><a href="http://www.provincia.bz.it/europa/it/finanziamenti-ue/competitivit%C3%A0-regionale-ed-occupazione-fesr.asp" target="_blank"><img src="images/logo-eu.jpg" alt="Logo FESR EU"></a></li>
+					<li class=""><a href="http://www.comune.bolzano.it/" target="_blank"><img src="images/logo-bz.jpg" alt="Logo Comune di Bolzano"></a></li>
+					<li class=""><a href="http://www.idm-suedtirol.com" target="_blank"><img src="images/logo-idm.jpg" alt="Logo IDM-S&uuml;dtirol - Alto Adige"></a></li>
+				</ul>
+		    </div>
+    	</div>
+    </footer>
 </body>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-sanitize/1.6.6/angular-sanitize.min.js"></script>
 <script type="text/javascript" src="app.js"></script>

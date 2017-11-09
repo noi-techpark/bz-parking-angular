@@ -85,7 +85,7 @@ author: Madeincima.it
 
 	.main{float:left;width:100%;padding:1.5em 0 1em 0;width:100%position:relative;z-index:0}
 
-	.actions{position:relative;float:left;width:100%;margin-bottom:20px; min-height: 40px;}
+	.actions{position:absolute;z-index: 1000;float:left;width:100%;margin-top:12px; min-height: 40px;}
 		.actions a{border:0}
 		.actions .time{position:relative;position:relative;z-index:150}
 		.actions .time span{float:left;padding:.7em 28px .7em .8em;color:#009cdd;background:#fff url(images/bg-arrow-thin.png) 90% 1.1em no-repeat;cursor:pointer}
@@ -132,7 +132,7 @@ author: Madeincima.it
         .forecast .updating{top:0}
         .map-cont{padding:3px;clear:both; position:relative;z-index:0;}
 		.map-cont img{width:100%;display:block} /* to remove when the real map will be in place */
-	    #map{height:450px}
+	    #map{height:90vh;overflow:hidden;clear:both;}
 
 	.aside{float:left;width:100%;background:url(images/bg-pattern.jpg) 0 0 repeat;padding:2em 0;position:relative}
 		.aside .buttons{color:#fff;text-align:center;font-size:1.3em;margin:0 auto;width:60%;min-width:13em;max-width:340px}
@@ -220,7 +220,9 @@ position: absolute;
 	#map{height:280px}
 
 }
-
+.listing{
+  padding-top:70px;
+}
 
 @media only screen and (min-width:25em){
 
@@ -244,11 +246,11 @@ padding-bottom: 0;
 @media only screen and (min-width:46.875em){
 
 	.aux{width:90%}
-	header{padding:20px 0 15px 0}
+	header{padding:20px 0 15px 0; position:fixed;left:0;right:0;z-index: 2000}
 	a.beta{bottom:23px;left:280px;font-size:1em;padding:0.3em .7em}
 	.carpark{width:49%}
 	.odd{margin-right:2%}
-	.main{padding-top:3.5em;padding-bottom:3.5em}
+	.main{padding-top:100px;padding-bottom:3.5em}
 
 	.share{position:absolute;top:120px;width:100%;display:none}
 	.addthisbox{margin:0 auto;}
@@ -280,7 +282,6 @@ padding-bottom: 0;
 	.carpark-selector ul{display:none;position:absolute;top:2.8em;left:0;min-width:140px;background:#fff;box-shadow:none}
 	.carpark-selector a{border-bottom:1px solid #e6e6e6;display:block;padding:.5em .5em .5em .8em}
 	.carpark-selector .last a{border:0}
-    #map{max-height:715px;height:600px;overflow:hidden}
     .notice{position:absolute;top:0;right:52px;margin:0}
     .forecast .notice{margin-top:0}
     .notice-time{margin-top:0;right:auto;left:130px;position:absolute;display: none;}

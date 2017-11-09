@@ -40,9 +40,10 @@ parking.controller('parking',function($scope,$http,$interval){
     southTyrol: {
       lat: 46.629849,
       lng: 11.3711693 ,
-      zoom: 10
+      zoom: 11
     },
-    geojson:{}
+    geojson:{
+    }
   });
   var defaultParameters = {
     service: 'WFS',
@@ -58,8 +59,59 @@ parking.controller('parking',function($scope,$http,$interval){
   $http.jsonp(geoserver_parking,{params : defaultParameters})
   .then(function(response){
     if (response.status==200){
-      angular.extend($scope, {
-        geojson : response.data
+      angular.extend($scope.geojson, {
+        parking :{
+          data: response.data,
+          pointToLayer: function(feature, latlng) {
+            var image =  'marker-icon-grey.png';
+            var current = feature.properties.occupacypercentage;
+            if (current <90)
+            image = 'marker-icon-green.png';
+            else if (current>=90 && current<100) {
+              image = 'marker-icon-yellow.png';
+            }else if (current == 100)
+            image = 'marker-icon-red.png'
+            return new L.Marker(latlng, {icon:L.icon({
+              iconUrl: 'images/'+image,
+              // iconSize: [38, 95],
+              iconAnchor: [25, 41],
+              popupAnchor: [-3, -76]
+            })
+          });
+        },
+        onEachFeature: function(feature,layer){
+          if (feature.properties && feature.properties.stationcode){
+            $scope.$watch('stations',function(stations){
+              if (stations ){
+              stations.forEach(function(station,index){
+                if (station.id == feature.properties.stationcode && station.current){
+                  var html =
+                  '<div class="carpark">' +
+                  '<div class="carpark-aux">' +
+                  '<h2>'+station.name+'</h2>' +
+                  '<ul>' +
+                  '<li class="address"><a href="">'+ station.mainaddress +'</a></li>' +
+                  '<li class="phone"><span>'+ station.phonenumber + '</span></li>' +
+                  '</ul>' +
+                  '<div class="slots">' +
+                  '<strong class="available-slots '+ (station.current.value>10?'available ':''+station.current.value<=15&&station.current.value>0?'almost-full ':''+
+                   station.current.value == 0 ? 'full':'') +'">'+
+                  '<span class="number">'+ station.current.value + '</span>' +
+                  '<span class="value_type">Free slots</span><span class="value_time"></span>' +
+                  '</strong> out of <strong>' + station.capacity + ' Available slots</strong><br/>' +
+                  // 'updated <span am-time-ago="station.current.timestamp"></span>
+                  '</div>'+
+                  '</div>' +
+                  '</div>'
+                  layer.bindPopup(html);
+                  return;
+                }
+              });
+            }
+          },true);
+          }
+        }
+      }
 
       //   name:'Parking Lots',
       //   type: 'geoJSON',
