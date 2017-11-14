@@ -1,4 +1,4 @@
-var parking= angular.module('parking', ['angularMoment','leaflet-directive','angular-chartist']);
+var parking= angular.module('parking', ['leaflet-directive','angular-chartist']);
 var endpoint = 'http://ipchannels.integreen-life.bz.it/parkingFrontEnd/rest/';
 var geoserver_parking = 'http://geodata.integreen-life.bz.it/geoserver/edi/ows';
 parking.config(function ($sceDelegateProvider,) {
@@ -11,6 +11,14 @@ parking.run(function($rootScope){
   var lang = navigator.language || navigator.userLanguage;
   $rootScope.lang = lang.split('-')[0];
   $rootScope.i18n = i18n;
+  moment.locale($rootScope.lang);
+  $rootScope.moment=moment;
+  if (!$rootScope.i18n[$rootScope.lang])
+	lang = 'en';
+  $rootScope.$watch('lang',function(newLocale){
+	if (newLocale)
+		moment.locale(newLocale);
+  });
 });
 parking.controller('parking',function($scope,$http,$interval,leafletData){
   var self = $scope;
@@ -118,7 +126,8 @@ parking.controller('parking',function($scope,$http,$interval,leafletData){
       map.locate({setView: true, maxZoom: 15, watch: true, enableHighAccuracy: true});
     });
   }
-
+  self.toGoogleMaps = function(station){
+  }
   self.getWFSLayer = function(){
     var defaultParameters = {
       service: 'WFS',
@@ -131,6 +140,34 @@ parking.controller('parking',function($scope,$http,$interval,leafletData){
       format_options:'callback:angular.callbacks._0',
 
     };
+    self.updateAllPopUps = function(stations,feature,layer){
+	if (stations ){
+        	stations.forEach(function(station,index){
+                	if (station.id == feature.properties.stationcode && station.current){
+                        	var html =
+	                        '<div class="carpark">' +
+        	                '<div class="carpark-aux">' +
+                	        '<h2>'+station.name+'</h2>' +
+                        	'<ul>' +
+	                        '<li class="address"><a target="_blank" href="https://maps.google.com?saddr=Current+Location&mode=driving&daddr=' + station.latitude+','+station.longitude + '">'+ station.mainaddress +'</a></li>' +
+        	                '<li class="phone"><span>'+ station.phonenumber + '</span></li>' +
+                	        '</ul>' +
+                        	'<div class="slots">' +
+	                        '<strong class="available-slots '+ (station.current.value>10?'available ':''+station.current.value<=15&&station.current.value>0?'almost-full ':''+
+        	                station.current.value == 0 ? 'full':'') +'">'+
+                	        '<span class="number">'+ station.current.value + '</span>' +
+                        	'<span class="value_type">'+self.i18n[self.lang].free_slots+'</span><span class="value_time"></span>' +
+	                        '</strong>'+ self.i18n[self.lang].out_of + ' <strong>' + station.capacity + ' ' + self.i18n[self.lang].available_slots + '</strong><br/>' +
+        	                'updated <span>' + moment(station.current.timestamp).fromNow() + '</span>' +
+                	        '</div>'+
+                        	'</div>' +
+	                        '</div>'
+        	                layer.bindPopup(html);
+                	        return;
+                	}
+        	});
+    	}
+    }
     $http.jsonp(geoserver_parking,{params : defaultParameters}).then(function(response){
       if (response.status==200){
         angular.extend(self.geojson, {
@@ -157,33 +194,11 @@ parking.controller('parking',function($scope,$http,$interval,leafletData){
             onEachFeature: function(feature,layer){
               if (feature.properties && feature.properties.stationcode){
                 self.$watch('stations',function(stations){
-                  if (stations ){
-                    stations.forEach(function(station,index){
-                      if (station.id == feature.properties.stationcode && station.current){
-                        var html =
-                        '<div class="carpark">' +
-                        '<div class="carpark-aux">' +
-                        '<h2>'+station.name+'</h2>' +
-                        '<ul>' +
-                        '<li class="address"><a href="">'+ station.mainaddress +'</a></li>' +
-                        '<li class="phone"><span>'+ station.phonenumber + '</span></li>' +
-                        '</ul>' +
-                        '<div class="slots">' +
-                        '<strong class="available-slots '+ (station.current.value>10?'available ':''+station.current.value<=15&&station.current.value>0?'almost-full ':''+
-                        station.current.value == 0 ? 'full':'') +'">'+
-                        '<span class="number">'+ station.current.value + '</span>' +
-                        '<span class="value_type">Free slots</span><span class="value_time"></span>' +
-                        '</strong> out of <strong>' + station.capacity + ' Available slots</strong><br/>' +
-                        'updated <span>' + moment(station.current.timestamp).fromNow() + '</span>' +
-                        '</div>'+
-                        '</div>' +
-                        '</div>'
-                        layer.bindPopup(html);
-                        return;
-                      }
-                    });
-                  }
+		 self.updateAllPopUps(stations,feature,layer);
                 },true);
+		self.$watch('lang',function(lang){
+                 self.updateAllPopUps(self.stations,feature,layer);
+                });
               }
             }
           }

@@ -22,6 +22,14 @@
   <header class="header" id="header">
     <div class="aux">
       <h1 class="logo" id="logo"><a href="https://parking.bz.it/"><img src="images/logo-bolzano-parking.png" alt="Bolzano Parking Beta"> <span class="alt">Bolzano Parking</span></a><a href="" class="beta round">Beta</a></h1>
+      <div class="lang round">
+	<span class="round" ng-click="sL=true">{{lang}}</span>						
+	<ul ng-show="sL" class="round">	    
+		<li><a href="javascript:void(0)"ng-click="lang='it';sL=false" ng-show="lang!='it'">IT</a></li>			
+		<li><a href="javascript:void(0)"ng-click="lang='de';sL=false" ng-show="lang!='de'">DE</a></li>			
+		<li><a href="javascript:void(0)"ng-click="lang='en';sL=false" ng-show="lang!='en'">EN</a></li>			
+	</ul>
+      </div>
     </div>
   </header>
   <main ng-controller="parking" id="main" class="main">
@@ -31,7 +39,7 @@
         <div class="switcher controls box round">
           <ul>
             <li><a href="javascript:void(0)" ng-click="page='list'" ng-class="{'active':page=='map'}" title="{{i18n[lang].grid_view}}" class="grid">{{i18n[lang].grid_view}}</a></li>
-            <li><a href="javascript:void(0)" ng-click="page='map';getLocation()" ng-class="{'active':page=='list'}" class="map ">Visualizzazione mappa</a></li>
+            <li><a href="javascript:void(0)" ng-click="page='map';getLocation()" ng-class="{'active':page=='list'}" class="map ">{{i18n[lang].map_view}}</a></li>
           </ul>
         </div>
       </div>
@@ -40,15 +48,15 @@
           <div class="carpark-aux">
             <h2>{{station.name}}</h2>
             <ul>
-              <li class="address"><a href="">{{station.mainaddress}}</a></li>
+              <li class="address"><a target="_blank" href="https://maps.google.com?saddr=Current+Location&mode=driving&daddr={{station.latitude}},{{station.longitude}}">{{station.mainaddress}}</a></li>
               <li class="phone"><span>{{station.phonenumber}}</span></li>
 
             </ul>
             <div class="slots"><strong class="available-slots" ng-class="{'available':station.current.value>10,'almost-full':station.current.value<=15,full:station.current.value==0}">
               <span class="number">{{station.current.value}}</span>
-              <span class="value_type">Free slots</span><span class="value_time"></span>
-            </strong> out of <strong>{{station.capacity}} Available slots</strong><br/>
-            updated <span am-time-ago="station.current.timestamp"></span>
+              <span class="value_type">{{i18n[lang].free_slots}}</span><span class="value_time"></span>
+            </strong> {{i18n[lang].out_of}} <strong>{{station.capacity}} {{i18n[lang].available_slots}}</strong><br/>
+            {{i18n[lang].updated}} <span>{{moment(station.current.timestamp).fromNow()}}</span>
 
             <div class="updating" style="display: none;"></div></div>
 
@@ -63,7 +71,7 @@
 </main>
 <footer id="footer-1" class="footer-1">
   <div class="aux">
-    <h3>The experimental apps of the<strong>Municipality of Bolzano</strong></h3>
+    <h3>{{i18n[lang].experimental}}<strong>{{i18n[lang].municipality}}</strong></h3>
     <ul>
       <li class="bzparking"><a href="http://parking.bz.it/" target="_blank"><img src="images/logo-bzparking.png" alt="BZ Parking"></a></li>
       <li class="bzbus"><a href="http://bus.bz.it" target="_blank"><img src="images/logo-bzbus.png" alt="BZ Bus"></a></li>
@@ -83,15 +91,17 @@
     	</div>
     </footer>
 </body>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.2/moment-with-locales.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.6/angular.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-i18n/1.6.6/angular-locale_it.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-i18n/1.6.6/angular-locale_de.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-i18n/1.6.6/angular-locale_en.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-sanitize/1.6.6/angular-sanitize.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-chartist.js/4.3.4/angular-chartist.min.js"></script>
 <script type="text/javascript" src="i18n.js"></script>
 <script type="text/javascript" src="app.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-leaflet-directive/0.10.0/angular-leaflet-directive.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-moment/1.1.0/angular-moment.min.js"></script>
 </html>

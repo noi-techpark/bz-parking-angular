@@ -80,7 +80,7 @@ author: Madeincima.it
     .lang{position:absolute;bottom:20%;right:0;z-index:150;font-size:1.2em;font-family: 'titillium_websemibold',Arial,sans-serif;}
     .lang span{display:block;cursor:pointer;color:#fff;text-transform:uppercase;padding:.45em 25px .45em .6em;background:#5c5a65 url(images/bg-arrow-thin-w.png) 83% .85em no-repeat;-moz-box-shadow:1px 1px 1px #000;-webkit-box-shadow:1px 1px 1px #000;box-shadow:1px 1px 1px #000}
     .lang span.open{background-position:83% -1.2em}
-    .lang ul{display:none;position:absolute;top:2.3em;left:0;min-width:50px;background:#5c5a65}
+    .lang ul{position:absolute;top:2.3em;left:0;min-width:50px;background:#5c5a65}
     .lang a{color:#fff;border:0;padding:.4em .45em;display:block}
 
 	.main{float:left;width:100%;padding:1.5em 0 1em 0;width:100%position:relative;z-index:0}
