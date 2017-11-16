@@ -92,8 +92,8 @@ parking.controller('parking',function($scope,$http,$interval,leafletData){
           record.value = 0;
           var currentData = datamap[record.timestamp];
           if (currentData){
-            if (record.created_on>currentData.created_on){
-              currentData = record;
+            if (record.created_on > currentData.created_on){
+              datamap[record.timestamp] = record;
             }
           }else {
             datamap[record.timestamp] = record;
