@@ -20,7 +20,7 @@ parking.run(function($rootScope){
 		moment.locale(newLocale);
   });
 });
-parking.controller('parking',function($scope,$http,$interval,leafletData){
+parking.controller('parking',function($scope,$http,$interval,$window,leafletData){
   var self = $scope;
   self.getAllPredictions = function(){
     if (self.stations && self.stations.length>0){
@@ -37,6 +37,20 @@ parking.controller('parking',function($scope,$http,$interval,leafletData){
         zoom: 11
       },
       geojson:{
+      },
+      layers:{
+	 baselayers: {
+         	osm: {
+                	name: 'OpenStreetMap',
+                        type: 'xyz',
+                        url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            layerOptions: {
+                                subdomains: ['a', 'b', 'c'],
+                                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                                continuousWorld: true
+                            }
+                     },
+      	}
       }
     });
     $interval(self.getCurrentData,1000*60);
@@ -123,23 +137,10 @@ parking.controller('parking',function($scope,$http,$interval,leafletData){
 
   self.getLocation = function() {
     leafletData.getMap('map').then(function(map) {
-      map.locate({setView: true, maxZoom: 15, watch: true, enableHighAccuracy: true});
+      map.locate({setView: true, maxZoom: 15, watch: false, enableHighAccuracy: true});
     });
   }
-  self.toGoogleMaps = function(station){
-  }
   self.getWFSLayer = function(){
-    var defaultParameters = {
-      service: 'WFS',
-      version: '1.1.0',
-      request: 'GetFeature',
-      typeName: 'edi:parking',
-      maxFeatures: 200,
-      outputFormat: 'text/javascript',
-      srsName:'EPSG:4326',
-      format_options:'callback:angular.callbacks._0',
-
-    };
     self.updateAllPopUps = function(stations,feature,layer){
 	if (stations ){
         	stations.forEach(function(station,index){
@@ -168,6 +169,16 @@ parking.controller('parking',function($scope,$http,$interval,leafletData){
         	});
     	}
     }
+    var defaultParameters = {
+      service: 'WFS',
+      version: '1.1.0',
+      request: 'GetFeature',
+      typeName: 'edi:parking',
+      maxFeatures: 200,
+      outputFormat: 'text/javascript',
+      srsName:'EPSG:4326',
+      format_options:'callback:angular.callbacks._' + $window.angular.callbacks.$$counter, //workaround for strange geoserver requestparams
+    };
     $http.jsonp(geoserver_parking,{params : defaultParameters}).then(function(response){
       if (response.status==200){
         angular.extend(self.geojson, {

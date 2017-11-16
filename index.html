@@ -35,11 +35,10 @@
   <main ng-controller="parking" id="main" class="main">
     <div ng-init="getStations();page='list';initIntervalls()">
       <div class="actions">
-        <div class="notice-time" style="display: none;">{{i18n[lang].updated_at}} <span class="msg"></span></div>
         <div class="switcher controls box round">
           <ul>
             <li><a href="javascript:void(0)" ng-click="page='list'" ng-class="{'active':page=='map'}" title="{{i18n[lang].grid_view}}" class="grid">{{i18n[lang].grid_view}}</a></li>
-            <li><a href="javascript:void(0)" ng-click="page='map';getLocation()" ng-class="{'active':page=='list'}" class="map ">{{i18n[lang].map_view}}</a></li>
+            <li><a href="javascript:void(0)" ng-click="page='map';" ng-class="{'active':page=='list'}" class="map ">{{i18n[lang].map_view}}</a></li>
           </ul>
         </div>
       </div>
@@ -64,8 +63,8 @@
       </div>
     </div>
   </div>
-  <div ng-if="page=='map'" id="map" ng-init="getWFSLayer()">
-    <leaflet center="southTyrol" geojson-nested="true" width="100vw" height="1000px" geojson="geojson" ></leaflet>
+  <div ng-if="page=='map'" id="map" ng-init="getLocation();getWFSLayer()">
+    <leaflet center="southTyrol" layers="layers" geojson-nested="true" width="100vw" height="90vh" geojson="geojson" ></leaflet>
   </div>
 </div>
 </main>
