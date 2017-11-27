@@ -1,6 +1,6 @@
 var parking= angular.module('parking', ['leaflet-directive','angular-chartist']);
-var endpoint = 'http://ipchannels.integreen-life.bz.it/parkingFrontEnd/rest/';
-var geoserver_parking = 'http://geodata.integreen-life.bz.it/geoserver/edi/ows';
+var endpoint = 'https://ipchannels.integreen-life.bz.it/parkingFrontEnd/rest/';
+var geoserver_parking = 'https://geodata.integreen-life.bz.it/geoserver/edi/ows';
 parking.config(function ($sceDelegateProvider,) {
   $sceDelegateProvider.resourceUrlWhitelist([
     'self',                    // trust all resources from the same origin
@@ -78,8 +78,10 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
         }
         $http.get(endpoint+'get-newest-record',config).then(function(response){
           if (response.status==200){
-            if (!item.current) item.current={};
+            if (!item.current) 
+		item.current={};	
             item.current.value=response.data.value;
+	    if (response.data.timestamp>new Date().getTime())
             item.current.timestamp=response.data.timestamp;
           }
         });
