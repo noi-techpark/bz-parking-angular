@@ -81,8 +81,9 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
             if (!item.current) 
 		item.current={};	
             item.current.value=response.data.value;
-	    if (response.data.timestamp>new Date().getTime())
-            item.current.timestamp=response.data.timestamp;
+	    if (response.data.timestamp<new Date().getTime()){
+            	item.current.timestamp=response.data.timestamp;
+	    }
           }
         });
       });
