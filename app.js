@@ -1,10 +1,10 @@
 var parking= angular.module('parking', ['leaflet-directive','angular-chartist']);
 var endpoint = 'https://ipchannels.integreen-life.bz.it/parkingFrontEnd/rest/';
-var geoserver_parking = 'https://geodata.integreen-life.bz.it/geoserver/edi/ows';
+var geoserver_parking = 'https://ipchannels.integreen-life.bz.it/geoserver/edi/ows';
 parking.config(function ($sceDelegateProvider,) {
   $sceDelegateProvider.resourceUrlWhitelist([
     'self',                    // trust all resources from the same origin
-    '*://geodata.integreen-life.bz.it/**'
+    '*://ipchannels.integreen-life.bz.it/**'
   ]);
 });
 parking.run(function($rootScope){
@@ -153,8 +153,8 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
         	                '<div class="carpark-aux">' +
                 	        '<h2>'+station.name+'</h2>' +
                         	'<ul>' +
-	                        '<li class="address"><a target="_blank" href="https://maps.google.com?saddr=Current+Location&mode=driving&daddr=' + station.latitude+','+station.longitude + '">'+ station.mainaddress +'</a></li>' +
-        	                '<li class="phone"><span>'+ station.phonenumber + '</span></li>' +
+	                        '<li class="address"><a target="_blank" href="https://maps.google.com?saddr=Current+Location&mode=driving&daddr=' + station.latitude+','+station.longitude + '">'+ (station.mainaddress?station.mainaddress:self.i18n[self.lang].not_available) +'</a></li>' +
+        	                '<li class="phone"><span>'+ (station.phonenumber?station.phonenumber:self.i18n[self.lang].not_available) + '</span></li>' +
                 	        '</ul>' +
                         	'<div class="slots">' +
 	                        '<strong class="available-slots '+ (station.current.value>10?'available ':''+station.current.value<=15&&station.current.value>0?'almost-full ':''+

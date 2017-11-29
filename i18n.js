@@ -9,6 +9,7 @@ var i18n = {
     updated:"attualizzato",
     experimental:"Le app sperimentali del",
     municipality:"comune di Bolzano",
+    not_available:"non disponibile"
   },
   de:{
     updated_at:"Vorhersagen aktualisiert um",
@@ -20,6 +21,7 @@ var i18n = {
     updated:"",
     experimental:"Die experimentellen App der",
     municipality:"Gemeinde Bozen",
+    not_available:"nicht verfügbar"
   },
   en:{
     updated_at:"Forecasts updated at",
@@ -31,5 +33,6 @@ var i18n = {
     updated:"updated",
     experimental:"The experimental apps of the",
     municipality:"Municipality of Bolzano",
+    not_available:"not available"
   }
 }

@@ -47,8 +47,8 @@
           <div class="carpark-aux">
             <h2>{{station.name}}</h2>
             <ul>
-              <li class="address"><a target="_blank" href="https://maps.google.com?saddr=Current+Location&mode=driving&daddr={{station.latitude}},{{station.longitude}}">{{station.mainaddress||'???'}}</a></li>
-              <li class="phone"><span>{{station.phonenumber||'???'}}</span></li>
+              <li class="address"><a target="_blank" href="https://maps.google.com?saddr=Current+Location&mode=driving&daddr={{station.latitude}},{{station.longitude}}">{{station.mainaddress||i18n[lang].not_available}}</a></li>
+              <li class="phone"><span>{{station.phonenumber||i18n[lang].not_available}}</span></li>
 
             </ul>
             <div class="slots"><strong class="available-slots" ng-class="{'available':station.current.value>10,'almost-full':station.current.value<=15,full:station.current.value==0}">
