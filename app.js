@@ -21,7 +21,7 @@ parking.run(function($rootScope){
   });
 
 });
-parking.controller('parking',function($scope,$http,$interval,$window,leafletData){
+parking.controller('parking',function($scope,$http,$interval,$window,leafletData,$filter){
   var self = $scope;
   self.getAllPredictions = function(){
     if (self.stations && self.stations.length>0){
@@ -61,8 +61,8 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
   self.getStations = function(){
     $http.get(endpoint+'get-station-details').then(function(response){
       if (response.status==200){
-        navigator.geolocation.getCurrentPosition(orderData);
-        function orderData(point){
+        navigator.geolocation.getCurrentPosition(orderDataByDistance,orderDataByTimestamp);
+        function orderDataByDistance(point){
           var data = geolib.orderByDistance({longitude:point.coords.longitude,latitude:point.coords.latitude}, response.data);
           self.stations=data;
           self.getCurrentData();
@@ -70,30 +70,48 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
             self.getPrediction(value.id);
           });
         }
+        function orderDataByTimestamp(err){
+          self.getCurrentData(response.data).then(function(){
+              self.stations = $filter('orderBy')(response.data, 'current.timestamp', true);
+              response.data.forEach(function(value,index){
+                self.getPrediction(value.id);
+              });
+          });
+
+        }
       }
     });
   }
-  self.getCurrentData = function(){
-    if (self.stations){
-      self.stations.forEach(function(item,index){
-        var config ={
-          params:{
-            station:item.id,
-            type:'free'
+  self.getCurrentData = function(stations){
+    if (!stations)
+      stations = self.stations;
+    return new Promise(function(resolve,reject){
+      if (stations){
+        var counter = 0;
+        stations.forEach(function(item,index){
+          var config ={
+            params:{
+              station:item.id,
+              type:'free'
+            }
           }
-        }
-        $http.get(endpoint+'get-newest-record',config).then(function(response){
-          if (response.status==200){
-            if (!item.current)
-		item.current={};
-            item.current.value=response.data.value;
-	    if (response.data.timestamp<new Date().getTime()){
-            	item.current.timestamp=response.data.timestamp;
-	    }
-          }
+          counter++;
+          $http.get(endpoint+'get-newest-record',config).then(function(response){
+            if (response.status==200){
+              if (!item.current)
+  		           item.current={};
+              item.current.value=response.data.value;
+  	           if (response.data.timestamp<new Date().getTime()){
+              	item.current.timestamp=response.data.timestamp;
+  	           }
+            }
+            if (counter == stations.length)
+              resolve();
+          });
         });
-      });
-    }
+      }else
+        reject("No stations defined");
+    });
   }
   self.getPrediction = function(stationid){
     var now = new Date().getTime();
