@@ -19,6 +19,7 @@ parking.run(function($rootScope){
 	if (newLocale)
 		moment.locale(newLocale);
   });
+
 });
 parking.controller('parking',function($scope,$http,$interval,$window,leafletData){
   var self = $scope;
@@ -59,12 +60,17 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
   }
   self.getStations = function(){
     $http.get(endpoint+'get-station-details').then(function(response){
-      if (response.status==200)
-      self.stations=response.data;
-      self.getCurrentData();
-      response.data.forEach(function(value,index){
-        self.getPrediction(value.id);
-      });
+      if (response.status==200){
+        navigator.geolocation.getCurrentPosition(orderData);
+        function orderData(point){
+          var data = geolib.orderByDistance({longitude:point.coords.longitude,latitude:point.coords.latitude}, response.data);
+          self.stations=data;
+          self.getCurrentData();
+          response.data.forEach(function(value,index){
+            self.getPrediction(value.id);
+          });
+        }
+      }
     });
   }
   self.getCurrentData = function(){
@@ -78,8 +84,8 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
         }
         $http.get(endpoint+'get-newest-record',config).then(function(response){
           if (response.status==200){
-            if (!item.current) 
-		item.current={};	
+            if (!item.current)
+		item.current={};
             item.current.value=response.data.value;
 	    if (response.data.timestamp<new Date().getTime()){
             	item.current.timestamp=response.data.timestamp;

@@ -1,0 +1,27 @@
+{
+  "name": "parkingbz",
+  "version": "1.0.0",
+  "description": "app to display parkingsituation in southtyrol",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/idm-suedtirol/bz-parking-angular.git"
+  },
+  "keywords": [
+    "parking",
+    "realtime",
+    "geo"
+  ],
+  "author": "Patrick Bertolla",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/idm-suedtirol/bz-parking-angular/issues"
+  },
+  "homepage": "https://github.com/idm-suedtirol/bz-parking-angular#readme",
+  "dependencies": {
+    "geolib": "^2.0.24"
+  }
+}
