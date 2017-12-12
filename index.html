@@ -32,18 +32,18 @@
       </div>
     </div>
   </header>
-  <main ng-controller="parking" id="main" class="main">
-    <div ng-init="getStations();page='list';initIntervalls()">
-      <div class="actions">
-        <div class="switcher controls box round">
-          <ul>
-            <li><a href="javascript:void(0)" ng-click="page='list'" ng-class="{'active':page=='map'}" title="{{i18n[lang].grid_view}}" class="grid">{{i18n[lang].grid_view}}</a></li>
-            <li><a href="javascript:void(0)" ng-click="page='map';" ng-class="{'active':page=='list'}" class="map ">{{i18n[lang].map_view}}</a></li>
-          </ul>
-        </div>
-      </div>
+  <div class="actions" ng-init="page='list'">
+    <div class="switcher controls box round">
+      <ul>
+        <li><a href="javascript:void(0)" ng-click="page='list'" ng-class="{'active':page=='map'}" title="{{i18n[lang].grid_view}}" class="grid">{{i18n[lang].grid_view}}</a></li>
+        <li><a href="javascript:void(0)" ng-click="page='map';" ng-class="{'active':page=='list'}" class="map ">{{i18n[lang].map_view}}</a></li>
+      </ul>
+    </div>
+  </div>
+  <main id="main" class="main" ng-controller="parking">
+    <div ng-init="getStations();initIntervalls()">
       <div ng-show="page=='list'" class="aux listing">
-        <div ng-repeat="station in stations" class="carpark box">
+        <div ng-repeat="station in stations|orderBy:conditionalSorting" class="carpark box">
           <div class="carpark-aux">
             <h2>{{station.name}}</h2>
             <ul>

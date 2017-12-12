@@ -14,15 +14,31 @@ parking.run(function($rootScope){
   moment.locale($rootScope.lang);
   $rootScope.moment=moment;
   if (!$rootScope.i18n[$rootScope.lang])
-	lang = 'en';
+	 lang = 'en';
   $rootScope.$watch('lang',function(newLocale){
-	if (newLocale)
-		moment.locale(newLocale);
+	   if (newLocale)
+		   moment.locale(newLocale);
   });
 
 });
 parking.controller('parking',function($scope,$http,$interval,$window,leafletData,$filter){
   var self = $scope;
+  function assignPosition(position){
+    self.currentPosition = position;
+  };
+  var geoLocation = navigator.geolocation.getCurrentPosition(assignPosition);
+  self.conditionalSorting = function(obj){
+    if (self.currentPosition){
+      var distance = geolib.getDistance(
+        {longitude:self.currentPosition.coords.longitude,latitude:self.currentPosition.coords.latitude},
+        {longitude:obj.longitude,latitude:obj.latitude});
+      return distance;
+    } else {
+      if (obj.current)
+        return obj.current.timestamp *-1;
+      else return 0;
+    }
+  }
   self.getAllPredictions = function(){
     if (self.stations && self.stations.length>0){
       self.stations.forEach(function(value,index){
@@ -61,41 +77,20 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
   self.getStations = function(){
     $http.get(endpoint+'get-station-details').then(function(response){
       if (response.status==200){
-        navigator.geolocation.getCurrentPosition(orderDataByDistance,orderDataByTimestamp);
-        function orderDataByDistance(point){
-          var data = geolib.orderByDistance({longitude:point.coords.longitude,latitude:point.coords.latitude}, response.data);
-          self.stations=data;
-          self.getCurrentData();
-          response.data.forEach(function(value,index){
-            self.getPrediction(value.id);
-          });
-        }
-        function orderDataByTimestamp(err){
-          self.getCurrentData(response.data).then(function(){
-              self.stations = $filter('orderBy')(response.data, 'current.timestamp', true);
-              response.data.forEach(function(value,index){
-                self.getPrediction(value.id);
-              });
-          });
-
-        }
+        self.stations = response.data;
+        self.getCurrentData();
       }
     });
   }
-  self.getCurrentData = function(stations){
-    if (!stations)
-      stations = self.stations;
-    return new Promise(function(resolve,reject){
-      if (stations){
-        var counter = 0;
-        stations.forEach(function(item,index){
+  self.getCurrentData = function(){
+      if (self.stations){
+        self.stations.forEach(function(item,index){
           var config ={
             params:{
               station:item.id,
               type:'free'
             }
           }
-          counter++;
           $http.get(endpoint+'get-newest-record',config).then(function(response){
             if (response.status==200){
               if (!item.current)
@@ -105,13 +100,9 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
               	item.current.timestamp=response.data.timestamp;
   	           }
             }
-            if (counter == stations.length)
-              resolve();
           });
         });
-      }else
-        reject("No stations defined");
-    });
+      }
   }
   self.getPrediction = function(stationid){
     var now = new Date().getTime();
@@ -169,7 +160,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
   }
   self.getWFSLayer = function(){
     self.updateAllPopUps = function(stations,feature,layer){
-	if (stations ){
+	     if (stations ){
         	stations.forEach(function(station,index){
                 	if (station.id == feature.properties.stationcode && station.current){
                         	var html =
@@ -232,9 +223,9 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
             onEachFeature: function(feature,layer){
               if (feature.properties && feature.properties.stationcode){
                 self.$watch('stations',function(stations){
-		 self.updateAllPopUps(stations,feature,layer);
+		                 self.updateAllPopUps(stations,feature,layer);
                 },true);
-		self.$watch('lang',function(lang){
+		            self.$watch('lang',function(lang){
                  self.updateAllPopUps(self.stations,feature,layer);
                 });
               }
