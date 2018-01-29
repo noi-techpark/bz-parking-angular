@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="parking">
+<html ng-app="parking" ng-cloak>
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -41,7 +41,7 @@
     </div>
   </div>
   <main id="main" class="main" ng-controller="parking">
-    <div ng-init="getStations();initIntervalls()">
+    <div ng-init="initIntervalls()">
       <div ng-show="page=='list'" class="aux listing">
         <div ng-repeat="station in stations|orderBy:conditionalSorting" class="carpark box">
           <div class="carpark-aux">

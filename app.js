@@ -23,10 +23,10 @@ parking.run(function($rootScope){
 });
 parking.controller('parking',function($scope,$http,$interval,$window,leafletData,$filter){
   var self = $scope;
-  function assignPosition(position){
+  function startApp(position){
     self.currentPosition = position;
+    self.getStations();
   };
-  var geoLocation = navigator.geolocation.getCurrentPosition(assignPosition);
   self.conditionalSorting = function(obj){
     if (self.currentPosition){
       var distance = geolib.getDistance(
@@ -47,6 +47,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
     }
   }
   self.initIntervalls = function(){
+    var geoLocation = navigator.geolocation.getCurrentPosition(startApp,self.getStations);
     angular.extend(self, {
       southTyrol: {
         lat: 46.629849,
