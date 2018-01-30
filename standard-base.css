@@ -438,11 +438,6 @@ only screen and (min-resolution: 2dppx){
 
 
 
-@media only screen and (max-width: 768px) {
-	.main{
-		padding-top:0;
-	}
-}
 .leaflet-control-layers{
 	display:none;
 }
@@ -481,4 +476,51 @@ only screen and (min-resolution: 2dppx){
 #preview_widget .parking-widget .carpark {
     width: 100%;
     float: none;
+}
+aside{
+        display:block;
+        width:auto;
+        top:150px;
+	position:absolute;
+	margin-left:15px;
+}
+.city a{
+	padding:15px;
+	display:block;
+	margin: 15px 0;
+	text-decoration:none;
+	border:1px dotted #009cdd;
+	
+}
+.active.city a{
+	color:#fff;
+	background: #009cdd;
+}
+.mobileonly{
+	display:none;
+}
+.actions .controls a.cities{
+	background: url(images/ico-controls.png) -64px 9px no-repeat;
+}
+.actions .controls a.cities.active{
+	background-position:-64px -20px;
+}
+@media only screen and (max-width: 768px) {
+	.main{
+		padding-top:0;
+	}
+	.mobileonly{
+		display:list-item;
+	}
+	aside{
+		display:none;
+	}
+}
+.cityshow{
+	background: url(images/bg-body.jpg) 0 0 repeat;
+	height:100vh;
+}
+.mobile-cities{
+	position:relative;
+	margin:0 5vh;
 }

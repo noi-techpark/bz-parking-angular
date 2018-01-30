@@ -1,10 +1,11 @@
 var parking= angular.module('parking', ['leaflet-directive','angular-chartist']);
-var endpoint = 'https://ipchannels.integreen-life.bz.it/parkingFrontEnd/rest/';
+var endpoint = 'http://bdp-test-env.b7twwguhvj.eu-west-1.elasticbeanstalk.com/parking/rest/';
 var geoserver_parking = 'https://ipchannels.integreen-life.bz.it/geoserver/edi/ows';
 parking.config(function ($sceDelegateProvider,) {
   $sceDelegateProvider.resourceUrlWhitelist([
     'self',                    // trust all resources from the same origin
-    '*://ipchannels.integreen-life.bz.it/**'
+    '*://ipchannels.integreen-life.bz.it/**',
+    '*://bdp-test-env.b7twwguhvj.eu-west-1.elasticbeanstalk.com/**'
   ]);
 });
 parking.run(function($rootScope){
@@ -28,7 +29,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
     self.getStations();
   };
   self.conditionalSorting = function(obj){
-    if (self.currentPosition){
+    if (self.currentPosition && obj.latitude && obj.longitude){
       var distance = geolib.getDistance(
         {longitude:self.currentPosition.coords.longitude,latitude:self.currentPosition.coords.latitude},
         {longitude:obj.longitude,latitude:obj.latitude});
@@ -45,6 +46,11 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
         self.getPrediction(value.id);
       });
     }
+  }
+  self.filterByCity = function(station){
+	if (station.municipality in self.mMap)
+	 return self.mMap[station.municipality];
+	return false;
   }
   self.initIntervalls = function(){
     var geoLocation = navigator.geolocation.getCurrentPosition(startApp,self.getStations);
@@ -79,6 +85,12 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
     $http.get(endpoint+'get-station-details').then(function(response){
       if (response.status==200){
         self.stations = response.data;
+	for (i in response.data){				//create city Map
+		var m = response.data[i].municipality;
+		if (!(m in self.mMap)){
+			self.mMap[m]=false;	
+		}
+	}
         self.getCurrentData();
       }
     });

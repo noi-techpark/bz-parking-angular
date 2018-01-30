@@ -35,15 +35,26 @@
   <div class="actions" ng-init="page='list'">
     <div class="switcher controls box round">
       <ul>
-        <li><a href="javascript:void(0)" ng-click="page='list'" ng-class="{'active':page=='map'}" title="{{i18n[lang].grid_view}}" class="grid">{{i18n[lang].grid_view}}</a></li>
-        <li><a href="javascript:void(0)" ng-click="page='map';" ng-class="{'active':page=='list'}" class="map ">{{i18n[lang].map_view}}</a></li>
+	<li class="mobileonly"><a href="javascript:void(0)" title="" ng-init="showCities=false" ng-click="showCities=!showCities"  class="cities" ng-class="{'active':showCities}">Hello</a></li>
+	<li><a href="javascript:void(0)" ng-click="page='list';showCities=false" ng-class="{'active':page=='map'}" title="{{i18n[lang].grid_view}}" class="grid">{{i18n[lang].grid_view}}</a></li>
+        <li><a href="javascript:void(0)" ng-click="page='map';showCities=false" ng-class="{'active':page=='list'}" class="map ">{{i18n[lang].map_view}}</a></li>
       </ul>
     </div>
   </div>
   <main id="main" class="main" ng-controller="parking">
-    <div ng-init="initIntervalls()">
+    <div ng-show="showCities" class="cityshow">
+	<ul class="mobile-cities listing">
+	  <li ng-repeat="(city,value) in mMap" ng-class="value?'active city':'city'"><a href="javascript:void(0)" ng-click="mMap[city]=!value" class="round">{{city}}</a></li>
+	</ul>
+    </div>
+    <aside ng-init="mMap={'Bolzano - Bozen':true}">
+	<ul>
+	  <li ng-repeat="(city,value) in mMap" ng-class="value?'active city':'city'"><a href="javascript:void(0)" ng-click="mMap[city]=!value" class="round">{{city}}</a></li>
+	</ul>
+    </aside>
+    <div ng-init="initIntervalls();">
       <div ng-show="page=='list'" class="aux listing">
-        <div ng-repeat="station in stations|orderBy:conditionalSorting" class="carpark box">
+        <div ng-repeat="station in stations|orderBy:conditionalSorting|filter: filterByCity" class="carpark box">
           <div class="carpark-aux">
             <h2>{{station.name}}</h2>
             <ul>
