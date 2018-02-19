@@ -1,11 +1,10 @@
 var parking= angular.module('parking', ['leaflet-directive','angular-chartist']);
-var endpoint = 'http://bdp-test-env.b7twwguhvj.eu-west-1.elasticbeanstalk.com/parking/rest/';
+var endpoint = 'https://ipchannels.integreen-life.bz.it/parkingFrontEnd/rest/';
 var geoserver_parking = 'https://ipchannels.integreen-life.bz.it/geoserver/edi/ows';
 parking.config(function ($sceDelegateProvider,) {
   $sceDelegateProvider.resourceUrlWhitelist([
     'self',                    // trust all resources from the same origin
-    '*://ipchannels.integreen-life.bz.it/**',
-    '*://bdp-test-env.b7twwguhvj.eu-west-1.elasticbeanstalk.com/**'
+	    '*://ipchannels.integreen-life.bz.it/**'
   ]);
 });
 parking.run(function($rootScope){
@@ -26,7 +25,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
   var self = $scope;
   function startApp(position){
     self.currentPosition = position;
-    self.getStations();
+    self.getStations(self.getAllPredictions);
   };
   self.conditionalSorting = function(obj){
     if (self.currentPosition && obj.latitude && obj.longitude){
@@ -52,8 +51,8 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 	 return self.mMap[station.municipality];
 	return false;
   }
-  self.initIntervalls = function(){
-    var geoLocation = navigator.geolocation.getCurrentPosition(startApp,self.getStations);
+	  self.init = function(){
+    var geoLocation = navigator.geolocation.getCurrentPosition(startApp,self.getStations(self.getAllPredictions)); //first parameter success callback, second fail callback
     angular.extend(self, {
       southTyrol: {
         lat: 46.629849,
@@ -81,7 +80,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
     $interval(self.getStations,1000*60*60);
     $interval(self.getAllPredictions,1000*60*30);
   }
-  self.getStations = function(){
+  self.getStations = function(callback){
     $http.get(endpoint+'get-station-details').then(function(response){
       if (response.status==200){
         self.stations = response.data;
@@ -91,11 +90,11 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 			self.mMap[m]=false;	
 		}
 	}
-        self.getCurrentData();
+        self.getCurrentData(callback);
       }
     });
   }
-  self.getCurrentData = function(){
+  self.getCurrentData = function(callback){
       if (self.stations){
         self.stations.forEach(function(item,index){
           var config ={
@@ -112,6 +111,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
   	           if (response.data.timestamp<new Date().getTime()){
               	item.current.timestamp=response.data.timestamp;
   	           }
+		if (callback && (typeof callback == "function")) callback();
             }
           });
         });
@@ -139,7 +139,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
           if (currentData){
             if (record.created_on > currentData.created_on){
               datamap[record.timestamp] = record;
-            }
+	    }
           }else {
             datamap[record.timestamp] = record;
           }
@@ -149,7 +149,8 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
           data.push(point);
         }
         var series = [{name:'station'+stationid, data:data}];
-        self.chartData={};
+	if ( !self.chartData)
+        	self.chartData={};
         self.chartData[stationid]={
           series:series
         }

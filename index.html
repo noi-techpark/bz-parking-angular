@@ -52,7 +52,7 @@
 	  <li ng-repeat="(city,value) in mMap" ng-class="value?'active city':'city'"><a href="javascript:void(0)" ng-click="mMap[city]=!value" class="round">{{city}}</a></li>
 	</ul>
     </aside>
-    <div ng-init="initIntervalls();">
+    <div ng-init="init();">
       <div ng-show="page=='list'" class="aux listing">
         <div ng-repeat="station in stations|orderBy:conditionalSorting|filter: filterByCity" class="carpark box">
           <div class="carpark-aux">

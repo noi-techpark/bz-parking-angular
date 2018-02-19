@@ -111,7 +111,7 @@ author: Madeincima.it
 		.carpark h2{padding-right:150px;line-height:100%;font-family:"titillium_websemibold",Arial,sans-serif;font-size:1.7em;font-weight:normal;margin:0.4em 0 1.1em 0}
 		.carpark li{margin-bottom:1.2em;font-size:1.1em;padding-left:22px;line-height:150%;}
 		.carpark li a{font-size:1em;}
-		.carpark li.address{background:url(images/ico-address.gif) 0 0 no-repeat;width:50%}
+			.carpark li.address{background:url(images/ico-address.gif) 0 0 no-repeat;width:50%;min-height:50px}
 		.phone{background:url(images/ico-phone.gif) 0 0 no-repeat}
 
 	.slots{position:absolute;top:0;right:3%;font-size:.85em; min-width:100px;}
