@@ -11,6 +11,11 @@ pipeline {
         sh "sed -i '/<\\/html>/e cat ${GOOGLE_ANALYTICS}' public/index.html"
       }
     }
+    stage('Test') {
+      steps {
+	      sh 'test -f public/index.html'
+      }
+    }
     stage('Upload') {
       steps {
         s3Upload(bucket: 'it.bz.parking', acl: 'PublicRead', file: './public')
