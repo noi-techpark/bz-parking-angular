@@ -1,10 +1,11 @@
 pipeline {
-  agent any
-  stages {
-    stage('Test') {
-      steps {
-	      sh 'test -f public/index.html'
-      }
+    agent any
+    
+    stages {
+        stage('Test') {
+            steps {
+                sh 'test -f public/index.html'
+            }
+        }
     }
-  }
 }
