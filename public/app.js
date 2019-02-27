@@ -1,6 +1,6 @@
 var parking= angular.module('parking', ['leaflet-directive','angular-chartist']);
-var endpoint = 'https://ipchannels.integreen-life.bz.it/parkingFrontEnd/rest/';
-var geoserver_parking = 'https://ipchannels.integreen-life.bz.it/geoserver/edi/ows';
+var endpoint = 'http://tomcat.testingmachine.eu/parking2/rest/';
+var geoserver_parking = 'https://ipchannels.integreen-life.bz.it/geoserver/integreen/ows';
 parking.config(function ($sceDelegateProvider,) {
   $sceDelegateProvider.resourceUrlWhitelist([
     'self',                    // trust all resources from the same origin
@@ -205,7 +205,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
       service: 'WFS',
       version: '1.1.0',
       request: 'GetFeature',
-      typeName: 'edi:parking',
+      typeName: 'integreen:V2-Parking',
       maxFeatures: 200,
       outputFormat: 'text/javascript',
       srsName:'EPSG:4326',
