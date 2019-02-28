@@ -111,10 +111,10 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
   	           if (response.data.timestamp<new Date().getTime()){
               	item.current.timestamp=response.data.timestamp;
   	           }
-		if (callback && (typeof callback == "function")) callback();
             }
           });
         });
+        if (callback && (typeof callback == "function")) callback();
       }
   }
   self.getPrediction = function(stationid){
