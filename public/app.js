@@ -21,7 +21,7 @@ parking.run(function($rootScope){
 	});
 
 });
-parking.controller('parking',function($scope,$http,$interval,$window,leafletData,$filter){
+parking.controller('parking',function($scope,$http,$interval,$window,leafletData,$filter,$q){
 	var self = $scope;
 	function startApp(position){
 		self.currentPosition = position;
@@ -109,7 +109,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 					$http.get(endpoint+'get-newest-record',config).then(function(response){
 						if (response.status==200){
 							if (!item.current)
-							item.current={};
+								item.current={};
 							item.current.value=response.data.value;
 							if (response.data.timestamp<new Date().getTime()){
 								item.current.timestamp=response.data.timestamp;
@@ -121,15 +121,17 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 			}
 		}
 		self.getPrediction = function(stationid,minutesTo){
-			recursiveRetrieval(minutesTo,drawChart);
-			function recursiveRetrieval(minutesTo,callback){
-				var datamap = {};
-				if (minutesTo <=0){
-					callback(datamap);
-					return;
-				}
-				else{
-					var now = new Date().getTime();
+			var datamap = {};
+			var now = new Date().getTime();
+			var counter = 30;
+			var asyncRequests= [];
+			while (counter <= minutesTo){
+				asyncRequests.push(asyncTypeByRetrival(stationid,counter));
+				counter+=30;
+			}
+			$q.all(asyncRequests).then(drawChart);
+			function asyncTypeByRetrival(stationid,minutesTo){
+				return $q(function(resolve,reject){
 					var config = {
 						params:{
 							station:stationid,
@@ -140,17 +142,17 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 					}
 					$http.get(endpoint + "get-records-in-timeframe",config).then(function(response){
 						if (response.data && response.data.length>0){
-							var newestRecord = response.data[response.length-1];
+							var newestRecord = response.data[response.data.length-1];
 							if (newestRecord.value<0)	//check for unrealistic values
 								newestRecord.value = 0;
-							datamap[record.timestamp] = newestRecord;
+							datamap[newestRecord.timestamp] = newestRecord;
+							resolve();
 						}
-						minutesTo-=30;
-						recursiveRetrieval(minutesTo,callback);
+						resolve();
 					});
-				}
+				});
 			}
-			function drawChart(datamap){
+			function drawChart(){
 				var data = [];
 				for (key in datamap){
 					var point = {x:new Date(datamap[key].timestamp),y:datamap[key].value};
@@ -158,7 +160,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 				}
 				var series = [{name:'station'+stationid, data:data}];
 				if ( !self.chartData)
-				self.chartData={};
+					self.chartData={};
 				self.chartData[stationid]={series:series};
 				self.options={
 					axisX: {
