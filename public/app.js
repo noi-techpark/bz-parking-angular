@@ -121,13 +121,15 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 			}
 		}
 		self.getPrediction = function(stationid,minutesTo){
-			var now = new Date().getTime();
-			var data = [];
-			var datamap = {};
-			function recursiveRetrieval(minutesTo){
-				if (minutesTo <=0)
-				return;
+			recursiveRetrieval(minutesTo,drawChart);
+			function recursiveRetrieval(minutesTo,callback){
+				var datamap = {};
+				if (minutesTo <=0){
+					callback(datamap);
+					return;
+				}
 				else{
+					var now = new Date().getTime();
 					var config = {
 						params:{
 							station:stationid,
@@ -136,119 +138,120 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 							to: now + 60 * 1000 * minutesTo,
 						}
 					}
-					minutesTo-=30;
 					$http.get(endpoint + "get-records-in-timeframe",config).then(function(response){
 						if (response.data && response.data.length>0){
 							var newestRecord = response.data[response.length-1];
 							if (newestRecord.value<0)	//check for unrealistic values
-							newestRecord.value = 0;
+								newestRecord.value = 0;
 							datamap[record.timestamp] = newestRecord;
+						}
+						minutesTo-=30;
+						recursiveRetrieval(minutesTo,callback);
+					});
+				}
+			}
+			function drawChart(datamap){
+				var data = [];
+				for (key in datamap){
+					var point = {x:new Date(datamap[key].timestamp),y:datamap[key].value};
+					data.push(point);
+				}
+				var series = [{name:'station'+stationid, data:data}];
+				if ( !self.chartData)
+				self.chartData={};
+				self.chartData[stationid]={series:series};
+				self.options={
+					axisX: {
+						type: Chartist.FixedScaleAxis,
+						divisor: 5,
+						labelInterpolationFnc: function(value) {
+							return moment(value).format('HH:mm');
+						}
+					}
+				}
+			}
+		}
+
+		self.getLocation = function() {
+			leafletData.getMap('map').then(function(map) {
+				map.locate({setView: true, maxZoom: 15, watch: false, enableHighAccuracy: true});
+			});
+		}
+		self.getWFSLayer = function(){
+			self.updateAllPopUps = function(stations,feature,layer){
+				if (stations ){
+					stations.forEach(function(station,index){
+						if (station.id == feature.properties.stationcode && station.current){
+							var html =
+							'<div class="carpark">' +
+							'<div class="carpark-aux">' +
+							'<h2>'+station.name+'</h2>' +
+							'<ul>' +
+							'<li class="address"><a target="_blank" href="https://maps.google.com?saddr=Current+Location&mode=driving&daddr=' + station.latitude+','+station.longitude + '">'+ (station.mainaddress?station.mainaddress:self.i18n[self.lang].not_available) +'</a></li>' +
+							'<li class="phone"><span>'+ (station.phonenumber?station.phonenumber:self.i18n[self.lang].not_available) + '</span></li>' +
+							'</ul>' +
+							'<div class="slots">' +
+							'<strong class="available-slots '+ (station.current.value>10?'available ':''+station.current.value<=15&&station.current.value>0?'almost-full ':''+
+							station.current.value == 0 ? 'full':'') +'">'+
+							'<span class="number">'+ station.current.value + '</span>' +
+							'<span class="value_type">'+self.i18n[self.lang].free_slots+'</span><span class="value_time"></span>' +
+							'</strong>'+ self.i18n[self.lang].out_of + ' <strong>' + station.capacity + ' ' + self.i18n[self.lang].available_slots + '</strong><br/>' +
+							'updated <span>' + moment(station.current.timestamp).fromNow() + '</span>' +
+							'</div>'+
+							'</div>' +
+							'</div>'
+							layer.bindPopup(html);
+							return;
 						}
 					});
 				}
 			}
-			/*	        for (key in datamap){
-			var point = {x:new Date(datamap[key].timestamp),y:datamap[key].value};
-			data.push(point);
-		}
-		var series = [{name:'station'+stationid, data:data}];
-		if ( !self.chartData)
-		self.chartData={};
-		self.chartData[stationid]={
-		series:series
-	}
-	self.options={
-	axisX: {
-	type: Chartist.FixedScaleAxis,
-	divisor: 5,
-	labelInterpolationFnc: function(value) {
-	return moment(value).format('HH:mm');
-}
-}
-}
-}*/
-}
-
-self.getLocation = function() {
-	leafletData.getMap('map').then(function(map) {
-		map.locate({setView: true, maxZoom: 15, watch: false, enableHighAccuracy: true});
-	});
-}
-self.getWFSLayer = function(){
-	self.updateAllPopUps = function(stations,feature,layer){
-		if (stations ){
-			stations.forEach(function(station,index){
-				if (station.id == feature.properties.stationcode && station.current){
-					var html =
-					'<div class="carpark">' +
-					'<div class="carpark-aux">' +
-					'<h2>'+station.name+'</h2>' +
-					'<ul>' +
-					'<li class="address"><a target="_blank" href="https://maps.google.com?saddr=Current+Location&mode=driving&daddr=' + station.latitude+','+station.longitude + '">'+ (station.mainaddress?station.mainaddress:self.i18n[self.lang].not_available) +'</a></li>' +
-					'<li class="phone"><span>'+ (station.phonenumber?station.phonenumber:self.i18n[self.lang].not_available) + '</span></li>' +
-					'</ul>' +
-					'<div class="slots">' +
-					'<strong class="available-slots '+ (station.current.value>10?'available ':''+station.current.value<=15&&station.current.value>0?'almost-full ':''+
-					station.current.value == 0 ? 'full':'') +'">'+
-					'<span class="number">'+ station.current.value + '</span>' +
-					'<span class="value_type">'+self.i18n[self.lang].free_slots+'</span><span class="value_time"></span>' +
-					'</strong>'+ self.i18n[self.lang].out_of + ' <strong>' + station.capacity + ' ' + self.i18n[self.lang].available_slots + '</strong><br/>' +
-					'updated <span>' + moment(station.current.timestamp).fromNow() + '</span>' +
-					'</div>'+
-					'</div>' +
-					'</div>'
-					layer.bindPopup(html);
-					return;
-				}
-			});
-		}
-	}
-	var defaultParameters = {
-		service: 'WFS',
-		version: '1.1.0',
-		request: 'GetFeature',
-		typeName: 'integreen:V2-Parking',
-		maxFeatures: 200,
-		outputFormat: 'text/javascript',
-		srsName:'EPSG:4326',
-		format_options:'callback:angular.callbacks._' + $window.angular.callbacks.$$counter, //workaround for strange geoserver requestparams
-	};
-	$http.jsonp(geoserver_parking,{params : defaultParameters}).then(function(response){
-		if (response.status==200){
-			angular.extend(self.geojson, {
-				parking :{
-					data: response.data,
-					pointToLayer: function(feature, latlng) {
-						var image =  'marker-icon-grey.png';
-						var current = feature.properties.occupacypercentage;
-						if (current <90)
-						image = 'marker-icon-green.png';
-						else if (current>=90 && current<100) {
-							image = 'marker-icon-yellow.png';
-						}else if (current == 100)
-						image = 'marker-icon-red.png'
-						return new L.Marker(latlng, {
-							icon:L.icon({
-								iconUrl: 'images/'+image,
-								// iconSize: [38, 95],
-								iconAnchor: [25, 41],
-								popupAnchor: [-18,  -50]
-							})
-						});
-					},
-					onEachFeature: function(feature,layer){
-						if (feature.properties && feature.properties.stationcode){
-							self.$watch('stations',function(stations){
-								self.updateAllPopUps(stations,feature,layer);
-							},true);
-							self.$watch('lang',function(lang){
-								self.updateAllPopUps(self.stations,feature,layer);
-							});
+			var defaultParameters = {
+				service: 'WFS',
+				version: '1.1.0',
+				request: 'GetFeature',
+				typeName: 'integreen:V2-Parking',
+				maxFeatures: 200,
+				outputFormat: 'text/javascript',
+				srsName:'EPSG:4326',
+				format_options:'callback:angular.callbacks._' + $window.angular.callbacks.$$counter, //workaround for strange geoserver requestparams
+			};
+			$http.jsonp(geoserver_parking,{params : defaultParameters}).then(function(response){
+				if (response.status==200){
+					angular.extend(self.geojson, {
+						parking :{
+							data: response.data,
+							pointToLayer: function(feature, latlng) {
+								var image =  'marker-icon-grey.png';
+								var current = feature.properties.occupacypercentage;
+								if (current <90)
+								image = 'marker-icon-green.png';
+								else if (current>=90 && current<100) {
+									image = 'marker-icon-yellow.png';
+								}else if (current == 100)
+								image = 'marker-icon-red.png'
+								return new L.Marker(latlng, {
+									icon:L.icon({
+										iconUrl: 'images/'+image,
+										// iconSize: [38, 95],
+										iconAnchor: [25, 41],
+										popupAnchor: [-18,  -50]
+									})
+								});
+							},
+							onEachFeature: function(feature,layer){
+								if (feature.properties && feature.properties.stationcode){
+									self.$watch('stations',function(stations){
+										self.updateAllPopUps(stations,feature,layer);
+									},true);
+									self.$watch('lang',function(lang){
+										self.updateAllPopUps(self.stations,feature,layer);
+									});
+								}
+							}
 						}
-					}
+					});
 				}
 			});
 		}
 	});
-}
-});
