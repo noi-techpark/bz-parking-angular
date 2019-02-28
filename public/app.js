@@ -129,7 +129,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
     }
 
     $http.get(endpoint + "get-records-in-timeframe",config).then(function(response){
-      if (response.data){
+      if (response.data && response.data.length>0){
         var data = [];
         var datamap = {};
         response.data.forEach(function(record,index){
