@@ -27,6 +27,9 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
     self.currentPosition = position;
     self.getStations(self.getAllPredictions);
   };
+	function startAppWithoutLocation(){
+		self.getStations(self.getAllPredictions);
+	}
   self.conditionalSorting = function(obj){
     if (self.currentPosition && obj.latitude && obj.longitude){
       var distance = geolib.getDistance(
@@ -42,7 +45,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
   self.getAllPredictions = function(){
     if (self.stations && self.stations.length>0){
       self.stations.forEach(function(value,index){
-        self.getPrediction(value.id);
+        self.getPrediction(value.id,240);
       });
     }
   }
@@ -51,8 +54,8 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 	 return self.mMap[station.municipality];
 	return false;
   }
-	  self.init = function(){
-    var geoLocation = navigator.geolocation.getCurrentPosition(startApp,self.getStations(self.getAllPredictions)); //first parameter success callback, second fail callback
+	self.init = function(){
+    var geoLocation = navigator.geolocation.getCurrentPosition(startApp,startAppWithoutLocation); //first parameter success callback, second fail callback
     angular.extend(self, {
       southTyrol: {
         lat: 46.629849,
@@ -87,7 +90,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 	for (i in response.data){				//create city Map
 		var m = response.data[i].municipality;
 		if (!(m in self.mMap)){
-			self.mMap[m]=false;	
+			self.mMap[m]=false;
 		}
 	}
         self.getCurrentData(callback);
@@ -111,60 +114,55 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
   	           if (response.data.timestamp<new Date().getTime()){
               	item.current.timestamp=response.data.timestamp;
   	           }
-		if (callback && (typeof callback == "function")) callback();
             }
           });
         });
+				if (callback && (typeof callback == "function")) callback();
       }
   }
-  self.getPrediction = function(stationid){
-    var now = new Date().getTime();
-    var config = {
-      params:{
-        station:stationid,
-        name:'parking-forecast',
-        from:now,
-        to: now + 60*1000*60 * 4,
-      }
-    }
-
-    $http.get(endpoint + "get-records-in-timeframe",config).then(function(response){
-      if (response.data){
-        var data = [];
-        var datamap = {};
-        response.data.forEach(function(record,index){
-          if (record.value<0)
-          record.value = 0;
-          var currentData = datamap[record.timestamp];
-          if (currentData){
-            if (record.created_on > currentData.created_on){
-              datamap[record.timestamp] = record;
-	    }
-          }else {
-            datamap[record.timestamp] = record;
-          }
-        });
-        for (key in datamap){
-          var point = {x:new Date(datamap[key].timestamp),y:datamap[key].value};
-          data.push(point);
+  self.getPrediction = function(stationid,minutesTo){
+		var now = new Date().getTime();
+		var data = [];
+		var datamap = {};
+    while (minutesTo >0){
+	    var config = {
+	      params:{
+	        station:stationid,
+	        name:'parking-forecast-' + minutesTo,
+	        from:now,
+	        to: now + 60 * 1000 * minutesTo,
+	      }
+	   }
+		 minutesTo-=30;
+	   $http.get(endpoint + "get-records-in-timeframe",config).then(function(response){
+	      if (response.data && response.data.length>0){
+	        var newestRecord = response.data[response.length-1];
+	          if (newestRecord.value<0)	//check for unrealistic values
+              newestRecord.value = 0;
+	          datamap[record.timestamp] = newestRecord;
         }
-        var series = [{name:'station'+stationid, data:data}];
-	if ( !self.chartData)
-        	self.chartData={};
-        self.chartData[stationid]={
-          series:series
-        }
-        self.options={
-          axisX: {
-            type: Chartist.FixedScaleAxis,
-            divisor: 5,
-            labelInterpolationFnc: function(value) {
-              return moment(value).format('HH:mm');
-            }
-          }
-        }
-      }
-    });
+			});
+		}
+/*	        for (key in datamap){
+	          var point = {x:new Date(datamap[key].timestamp),y:datamap[key].value};
+	          data.push(point);
+	        }
+	        var series = [{name:'station'+stationid, data:data}];
+		if ( !self.chartData)
+          self.chartData={};
+	        self.chartData[stationid]={
+	          series:series
+	        }
+	        self.options={
+	          axisX: {
+	            type: Chartist.FixedScaleAxis,
+	            divisor: 5,
+	            labelInterpolationFnc: function(value) {
+	              return moment(value).format('HH:mm');
+	            }
+	          }
+	        }
+		}*/
   }
 
   self.getLocation = function() {
