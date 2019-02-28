@@ -1,105 +1,105 @@
 <!DOCTYPE html>
 <html ng-app="parking" ng-cloak>
 <head>
-  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta property="og:title" content="Bolzano parking">
-  <meta property="og:type" content="article">
-  <meta property="og:url" content="http://parking.bz.it">
-  <meta property="og:image" content="http://parking.bz.it/images/logo-bolzano-parking.png">
-  <meta property="og:description" content="Real-time parking lot availability in the city of Bolzano">
-  <meta property="og:site_name" content="Bolzano parking">
-  <title>BZ Parking</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" type="text/css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css" type="text/css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css" type="text/css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.css" type="text/css">
-  <link href="standard.css" rel="stylesheet" media="screen,projection,print" type="text/css">
-  <link href="standard-base.css" rel="stylesheet" media="screen,projection,print" type="text/css">
-  <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<meta property="og:title" content="Bolzano parking">
+	<meta property="og:type" content="article">
+	<meta property="og:url" content="http://parking.bz.it">
+	<meta property="og:image" content="http://parking.bz.it/images/logo-bolzano-parking.png">
+	<meta property="og:description" content="Real-time parking lot availability in the city of Bolzano">
+	<meta property="og:site_name" content="Bolzano parking">
+	<title>BZ Parking</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" type="text/css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css" type="text/css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css" type="text/css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.css" type="text/css">
+	<link href="standard.css" rel="stylesheet" media="screen,projection,print" type="text/css">
+	<link href="standard-base.css" rel="stylesheet" media="screen,projection,print" type="text/css">
+	<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
 </head>
 <body>
-  <header class="header" id="header">
-    <div class="aux">
-      <h1 class="logo" id="logo"><a href="http://parking.bz.it/"><img src="images/logo-bolzano-parking.png" alt="Bolzano Parking Beta"> <span class="alt">Bolzano Parking</span></a><a href="" class="beta round">Beta</a></h1>
-      <div class="lang round">
-	<span class="round" ng-click="sL=true">{{lang}}</span>
-	<ul ng-show="sL" class="round">
-		<li><a href="javascript:void(0)"ng-click="lang='it';sL=false" ng-show="lang!='it'">IT</a></li>
-		<li><a href="javascript:void(0)"ng-click="lang='de';sL=false" ng-show="lang!='de'">DE</a></li>
-		<li><a href="javascript:void(0)"ng-click="lang='en';sL=false" ng-show="lang!='en'">EN</a></li>
-	</ul>
-      </div>
-    </div>
-  </header>
-  <div class="actions" ng-init="page='list'">
-    <div class="switcher controls box round">
-      <ul>
-	<li class="mobileonly"><a href="javascript:void(0)" title="" ng-init="showCities=false" ng-click="showCities=!showCities"  class="cities" ng-class="{'active':showCities}">Hello</a></li>
-	<li><a href="javascript:void(0)" ng-click="page='list';showCities=false" ng-class="{'active':page=='map'}" title="{{i18n[lang].grid_view}}" class="grid">{{i18n[lang].grid_view}}</a></li>
-        <li><a href="javascript:void(0)" ng-click="page='map';showCities=false" ng-class="{'active':page=='list'}" class="map ">{{i18n[lang].map_view}}</a></li>
-      </ul>
-    </div>
-  </div>
-  <main id="main" class="main" ng-controller="parking">
-    <div ng-show="showCities" class="cityshow">
-	<ul class="mobile-cities listing">
-	  <li ng-repeat="(city,value) in mMap" ng-class="value?'active city':'city'"><a href="javascript:void(0)" ng-click="mMap[city]=!value" class="round">{{city}}</a></li>
-	</ul>
-    </div>
-    <aside ng-init="mMap={'Bolzano - Bozen':true}">
-	<ul>
-	  <li ng-repeat="(city,value) in mMap" ng-class="value?'active city':'city'"><a href="javascript:void(0)" ng-click="mMap[city]=!value" class="round">{{city}}</a></li>
-	</ul>
-    </aside>
-    <div ng-init="init();">
-      <div ng-show="page=='list'" class="aux listing">
-        <div ng-repeat="station in stations|orderBy:conditionalSorting|filter: filterByCity" class="carpark box">
-          <div class="carpark-aux">
-            <h2>{{station.name}}</h2>
-            <ul>
-              <li class="address"><a target="_blank" href="https://maps.google.com?saddr=Current+Location&mode=driving&daddr={{station.latitude}},{{station.longitude}}">{{station.mainaddress||i18n[lang].not_available}}</a></li>
-              <li class="phone"><span>{{station.phonenumber||i18n[lang].not_available}}</span></li>
+	<header class="header" id="header">
+		<div class="aux">
+			<h1 class="logo" id="logo"><a href="http://parking.bz.it/"><img src="images/logo-bolzano-parking.png" alt="Bolzano Parking Beta"> <span class="alt">Bolzano Parking</span></a><a href="" class="beta round">Beta</a></h1>
+			<div class="lang round">
+				<span class="round" ng-click="sL=true">{{lang}}</span>
+				<ul ng-show="sL" class="round">
+					<li><a href="javascript:void(0)"ng-click="lang='it';sL=false" ng-show="lang!='it'">IT</a></li>
+					<li><a href="javascript:void(0)"ng-click="lang='de';sL=false" ng-show="lang!='de'">DE</a></li>
+					<li><a href="javascript:void(0)"ng-click="lang='en';sL=false" ng-show="lang!='en'">EN</a></li>
+				</ul>
+			</div>
+		</div>
+	</header>
+	<div class="actions" ng-init="page='list'">
+		<div class="switcher controls box round">
+			<ul>
+				<li class="mobileonly"><a href="javascript:void(0)" title="" ng-init="showCities=false" ng-click="showCities=!showCities"  class="cities" ng-class="{'active':showCities}">Hello</a></li>
+				<li><a href="javascript:void(0)" ng-click="page='list';showCities=false" ng-class="{'active':page=='map'}" title="{{i18n[lang].grid_view}}" class="grid">{{i18n[lang].grid_view}}</a></li>
+				<li><a href="javascript:void(0)" ng-click="page='map';showCities=false" ng-class="{'active':page=='list'}" class="map ">{{i18n[lang].map_view}}</a></li>
+			</ul>
+		</div>
+	</div>
+	<main id="main" class="main" ng-controller="parking">
+		<div ng-show="showCities" class="cityshow">
+			<ul class="mobile-cities listing">
+				<li ng-repeat="(city,value) in mMap" ng-class="value?'active city':'city'"><a href="javascript:void(0)" ng-click="mMap[city]=!value" class="round">{{city}}</a></li>
+			</ul>
+		</div>
+		<aside ng-init="mMap={'Bolzano - Bozen':true}">
+			<ul>
+				<li ng-repeat="(city,value) in mMap" ng-class="value?'active city':'city'"><a href="javascript:void(0)" ng-click="mMap[city]=!value" class="round">{{city}}</a></li>
+			</ul>
+		</aside>
+		<div ng-init="init();">
+			<div ng-show="page=='list'" class="aux listing">
+				<div ng-repeat="station in stations|orderBy:conditionalSorting|filter: filterByCity" class="carpark box">
+					<div class="carpark-aux">
+						<h2>{{station.name}}</h2>
+						<ul>
+							<li class="address"><a target="_blank" href="https://maps.google.com?saddr=Current+Location&mode=driving&daddr={{station.latitude}},{{station.longitude}}">{{station.mainaddress||i18n[lang].not_available}}</a></li>
+							<li class="phone"><span>{{station.phonenumber||i18n[lang].not_available}}</span></li>
 
-            </ul>
-            <div class="slots"><strong class="available-slots" ng-class="{'available':station.current.value>10,'almost-full':station.current.value<=15,full:station.current.value==0}">
-              <span class="number">{{station.current.value}}</span>
-              <span class="value_type">{{i18n[lang].free_slots}}</span><span class="value_time"></span>
-            </strong> {{i18n[lang].out_of}} <strong>{{station.capacity}} {{i18n[lang].available_slots}}</strong><br/>
-            {{i18n[lang].updated}} <span>{{moment(station.current.timestamp).fromNow()}}</span>
+						</ul>
+						<div class="slots"><strong class="available-slots" ng-class="{'available':station.current.value>10,'almost-full':station.current.value<=15,full:station.current.value==0}">
+							<span class="number">{{station.current.value}}</span>
+							<span class="value_type">{{i18n[lang].free_slots}}</span><span class="value_time"></span>
+						</strong> {{i18n[lang].out_of}} <strong>{{station.capacity}} {{i18n[lang].available_slots}}</strong><br/>
+						{{i18n[lang].updated}} <span>{{moment(station.current.timestamp).fromNow()}}</span>
 
-            <div class="updating" style="display: none;"></div></div>
+						<div class="updating" style="display: none;"></div></div>
 
-            <chartist id="chart{{station.id}}" chartist-data="chartData[station.id]" chartist-chart-type="Line" chartist-chart-options="options"></chartist>
-      </div>
-    </div>
-  </div>
-  <div ng-if="page=='map'" id="map" ng-init="getLocation();getWFSLayer()">
-    <leaflet center="southTyrol" layers="layers" geojson-nested="true" width="100vw" height="90vh" geojson="geojson" ></leaflet>
-  </div>
-</div>
-</main>
-<footer id="footer-1" class="footer-1">
-  <div class="aux">
-    <h3>{{i18n[lang].experimental}}<strong>{{i18n[lang].municipality}}</strong></h3>
-    <ul>
-      <li class="bzparking"><a href="http://parking.bz.it/" target="_blank"><img src="images/logo-bzparking.png" alt="BZ Parking"></a></li>
-      <li class="bzbus"><a href="http://bus.bz.it" target="_blank"><img src="images/logo-bzbus.png" alt="BZ Bus"></a></li>
-      <li class="bztraffic"><a href="http://traffic.bz.it/" target="_blank"><img src="images/logo-bztraffic.png" alt="BZ Traffic"></a></li>
-    </ul>
-  </div>
-</footer>
-<footer id="footer-2" class="footer-2" ng-init="getAllPredictions()">
-    	<div class="aux">
-		    <div class="aux2">
-		    	<ul>
+						<chartist id="chart{{station.id}}" chartist-data="chartData[station.id]" chartist-chart-type="Line" chartist-chart-options="options"></chartist>
+					</div>
+				</div>
+			</div>
+			<div ng-if="page=='map'" id="map" ng-init="getLocation();getWFSLayer()">
+				<leaflet center="southTyrol" layers="layers" geojson-nested="true" width="100vw" height="90vh" geojson="geojson" ></leaflet>
+			</div>
+		</div>
+	</main>
+	<footer id="footer-1" class="footer-1">
+		<div class="aux">
+			<h3>{{i18n[lang].experimental}}<strong>{{i18n[lang].municipality}}</strong></h3>
+			<ul>
+				<li class="bzparking"><a href="http://parking.bz.it/" target="_blank"><img src="images/logo-bzparking.png" alt="BZ Parking"></a></li>
+				<li class="bzbus"><a href="http://bus.bz.it" target="_blank"><img src="images/logo-bzbus.png" alt="BZ Bus"></a></li>
+				<li class="bztraffic"><a href="http://traffic.bz.it/" target="_blank"><img src="images/logo-bztraffic.png" alt="BZ Traffic"></a></li>
+			</ul>
+		</div>
+	</footer>
+	<footer id="footer-2" class="footer-2" ng-init="getAllPredictions()">
+		<div class="aux">
+			<div class="aux2">
+				<ul>
 					<li class="first "><a href="http://www.provincia.bz.it/europa/it/finanziamenti-ue/competitivit%C3%A0-regionale-ed-occupazione-fesr.asp" target="_blank"><img src="images/logo-eu.jpg" alt="Logo FESR EU"></a></li>
 					<li class=""><a href="http://www.comune.bolzano.it/" target="_blank"><img src="images/logo-bz.jpg" alt="Logo Comune di Bolzano"></a></li>
 					<li class=""><a href="http://www.idm-suedtirol.com" target="_blank"><img src="images/logo-idm.jpg" alt="Logo IDM-S&uuml;dtirol - Alto Adige"></a></li>
 				</ul>
-		    </div>
-    	</div>
-    </footer>
+			</div>
+		</div>
+	</footer>
 </body>
 <script type="text/javascript" src="node_modules/geolib/dist/geolib.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.2/moment-with-locales.min.js"></script>
