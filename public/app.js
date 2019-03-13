@@ -158,6 +158,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 					var point = {x:new Date(datamap[key].timestamp),y:datamap[key].value};
 					data.push(point);
 				}
+				data.sort((a,b)=> (a.x.getTime()-b.x.getTime()));
 				var series = [{name:'station'+stationid, data:data}];
 				if ( !self.chartData)
 					self.chartData={};
