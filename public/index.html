@@ -47,7 +47,7 @@
 				<li ng-repeat="(city,value) in mMap" ng-class="value?'active city':'city'"><a href="javascript:void(0)" ng-click="mMap[city]=!value" class="round">{{city}}</a></li>
 			</ul>
 		</div>
-		<aside ng-init="mMap={'Bolzano - Bozen':true}">
+		<aside ng-init="mMap={}">
 			<ul>
 				<li ng-repeat="(city,value) in mMap" ng-class="value?'active city':'city'"><a href="javascript:void(0)" ng-click="mMap[city]=!value" class="round">{{city}}</a></li>
 			</ul>

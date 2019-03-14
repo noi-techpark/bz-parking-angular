@@ -90,7 +90,10 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 					for (i in response.data){				//create city Map
 						var m = response.data[i].municipality;
 						if (!(m in self.mMap)){
-							self.mMap[m]=false;
+							if (m.indexOf('Bozen')>=0)
+								self.mMap[m]=true;
+							else
+								self.mMap[m]=false;
 						}
 					}
 					self.getCurrentData(callback);
