@@ -1,6 +1,6 @@
 var parking= angular.module('parking', ['leaflet-directive','angular-chartist']);
-var endpoint = 'http://tomcat.testingmachine.eu/parking2/rest/';
-var geoserver_parking = 'https://ipchannels.integreen-life.bz.it/geoserver/integreen/ows';
+var endpoint = 'https://ipchannels.integreen-life.bz.it/parkingFrontEnd/rest/';
+var geoserver_parking = 'https://ipchannels.integreen-life.bz.it/geoserver/edi/ows';
 parking.config(function ($sceDelegateProvider,) {
 	$sceDelegateProvider.resourceUrlWhitelist([
 		'self',                    // trust all resources from the same origin
@@ -106,7 +106,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 					var config ={
 						params:{
 							station:item.id,
-							type:'free'
+              				type:'occupied'
 						}
 					}
 					$http.get(endpoint+'get-newest-record',config).then(function(response){
@@ -188,6 +188,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 				if (stations ){
 					stations.forEach(function(station,index){
 						if (station.id == feature.properties.stationcode && station.current){
+							var free_places = station.capacity - station.current.value
 							var html =
 							'<div class="carpark">' +
 							'<div class="carpark-aux">' +
@@ -197,9 +198,9 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 							'<li class="phone"><span>'+ (station.phonenumber?station.phonenumber:self.i18n[self.lang].not_available) + '</span></li>' +
 							'</ul>' +
 							'<div class="slots">' +
-							'<strong class="available-slots '+ (station.current.value>10?'available ':''+station.current.value<=15&&station.current.value>0?'almost-full ':''+
-							station.current.value == 0 ? 'full':'') +'">'+
-							'<span class="number">'+ station.current.value + '</span>' +
+							'<strong class="available-slots '+ (free_places>10?'available ':''+free_places<=15&&free_places>0?'almost-full ':''+
+							free_places == 0 ? 'full':'') +'">'+
+							'<span class="number">'+ free_places +  '</span>' +
 							'<span class="value_type">'+self.i18n[self.lang].free_slots+'</span><span class="value_time"></span>' +
 							'</strong>'+ self.i18n[self.lang].out_of + ' <strong>' + station.capacity + ' ' + self.i18n[self.lang].available_slots + '</strong><br/>' +
 							'updated <span>' + moment(station.current.timestamp).fromNow() + '</span>' +
@@ -216,7 +217,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 				service: 'WFS',
 				version: '1.1.0',
 				request: 'GetFeature',
-				typeName: 'integreen:V2-Parking',
+				typeName: 'edi:parking',
 				maxFeatures: 200,
 				outputFormat: 'text/javascript',
 				srsName:'EPSG:4326',
