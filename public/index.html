@@ -62,11 +62,12 @@
 							<li class="phone"><span>{{station.phonenumber||i18n[lang].not_available}}</span></li>
 
 						</ul>
-						<div class="slots"><strong class="available-slots" ng-class="{'available':(station.capacity - station.current.value)>10,'almost-full':(station.capacity - station.current.value)<=15,full:(station.capacity - station.current.value)==0}">
-							<span class="number">{{station.capacity - station.current.value}}</span>
+						{{station.current.value}}
+						<div class="slots"><strong class="available-slots" ng-class="{'available':(station.current.value != null && station.capacity - station.current.value)>10,'almost-full':(station.capacity - station.current.value)<=15,full:(station.capacity - station.current.value)==0}">
+							<span class="number">{{station.current.value!=null ? station.capacity - station.current.value : undefined}}</span>
 							<span class="value_type">{{i18n[lang].free_slots}}</span><span class="value_time"></span>
 						</strong> {{i18n[lang].out_of}} <strong>{{station.capacity}} {{i18n[lang].available_slots}}</strong><br/>
-						{{i18n[lang].updated}} <span>{{moment(station.current.timestamp).fromNow()}}</span>
+						<span ng-show="station.current.value!=null">{{i18n[lang].updated}} <span>{{moment(station.current.timestamp).fromNow()}}</span></span>
 
 						<div class="updating" style="display: none;"></div></div>
 
