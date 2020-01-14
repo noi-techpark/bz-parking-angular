@@ -1,10 +1,11 @@
 var parking= angular.module('parking', ['leaflet-directive','angular-chartist']);
-var endpoint = 'https://ipchannels.integreen-life.bz.it/parkingFrontEnd/rest/';
+var endpoint = 'https://mobility.api.opendatahub.bz.it/v2/api/flat/ParkingStation/';
 var geoserver_parking = 'https://ipchannels.integreen-life.bz.it/geoserver/edi/ows';
 parking.config(function ($sceDelegateProvider,) {
 	$sceDelegateProvider.resourceUrlWhitelist([
 		'self',                    // trust all resources from the same origin
-		'*://ipchannels.integreen-life.bz.it/**'
+		'*://mobility.api.opendatahub.bz.it/**',
+        '*://ipchannels.integreen-life.bz.it/**',
 	]);
 });
 parking.run(function($rootScope){
@@ -25,16 +26,16 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 	var self = $scope;
 	function startApp(position){
 		self.currentPosition = position;
-		self.getStations(self.getAllPredictions);
+		self.getData();
 	};
 	function startAppWithoutLocation(){
-		self.getStations(self.getAllPredictions);
+		self.getData();
 	}
 	self.conditionalSorting = function(obj){
-		if (self.currentPosition && obj.latitude && obj.longitude){
+		if (self.currentPosition && obj.scoordinate.y && obj.scoordinate.x){
 			var distance = geolib.getDistance(
 				{longitude:self.currentPosition.coords.longitude,latitude:self.currentPosition.coords.latitude},
-				{longitude:obj.longitude,latitude:obj.latitude});
+				{longitude:obj.scoordinate.x,latitude:obj.scoordinate.y});
 				return distance;
 			} else {
 				if (obj.current)
@@ -50,8 +51,8 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 			}
 		}
 		self.filterByCity = function(station){
-			if (station.municipality in self.mMap)
-			return self.mMap[station.municipality];
+			if (station.smetadata.municipality in self.mMap)
+			return self.mMap[station.smetadata.municipality].active;
 			return false;
 		}
 		self.init = function(){
@@ -79,79 +80,26 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 					}
 				}
 			});
-			$interval(self.getCurrentData,1000*60);
 			$interval(self.getStations,1000*60*60);
-			$interval(self.getAllPredictions,1000*60*30);
 		}
-		self.getStations = function(callback){
-			$http.get(endpoint+'get-station-details').then(function(response){
+		self.getData = function(callback){
+			$http.get(endpoint+'occupied?limit=200&offset=0&shownull=false&distinct=true').then(function(response){
 				if (response.status==200){
-					self.stations = response.data;
-					for (i in response.data){				//create city Map
-						var m = response.data[i].municipality;
-						if (!(m in self.mMap)){
-							if (m.indexOf('Bozen')>=0)
-								self.mMap[m]=true;
-							else
-								self.mMap[m]=false;
-						}
-					}
-					self.getCurrentData(callback);
+                    let data = response.data.data;
+					self.data = data;
+                    let distinctMunicipalities = [...new Set(data.map(item => item.smetadata.municipality))].sort();
+                    self.mMap = distinctMunicipalities.reduce((map,item) => (map[item] ={active:item.indexOf('Bozen')!=-1,value:item},map),{});
+				    if (callback && (typeof callback == "function")) callback();
 				}
 			});
-		}
-		self.getCurrentData = function(callback){
-			if (self.stations){
-				self.stations.forEach(function(item,index){
-					var config ={
-						params:{
-							station:item.id,
-              				type:'occupied'
-						}
-					}
-					$http.get(endpoint+'get-newest-record',config).then(function(response){
-						if (response.status==200){
-							if (!item.current)
-								item.current={};
-							item.current.value=response.data.value;
-							if (response.data.timestamp<new Date().getTime()){
-								item.current.timestamp=response.data.timestamp;
-							}
-						}
-					});
-				});
-				if (callback && (typeof callback == "function")) callback();
-			}
 		}
 		self.getPrediction = function(stationid,minutesTo){
 			var datamap = {};
 			var now = new Date().getTime();
-			var counter = 30;
-			var asyncRequests= [];
-			while (counter <= minutesTo){
-				asyncRequests.push(asyncTypeByRetrival(stationid,counter));
-				counter+=30;
-			}
-			$q.all(asyncRequests).then(drawChart);
-			function asyncTypeByRetrival(stationid,minutesTo){
-				return $q(function(resolve,reject){
-					var config = {
-						params:{
-							station:stationid,
-							name:'parking-forecast-' + minutesTo,
-							from:now,
-							to: now + 60 * 1000 * minutesTo,
-						}
-					}
-					$http.get(endpoint + "get-records-in-timeframe",config).then(function(response){
-						if (response.data && response.data.length>0){
-							var newestRecord = response.data[response.data.length-1];
-							if (newestRecord.value<0)	//check for unrealistic values
-								newestRecord.value = 0;
-							datamap[newestRecord.timestamp] = newestRecord;
-							resolve();
-						}
-						resolve();
+			
+		    $http.get(endpoint + "parking-forecast-30,parking-forecast-60,parking-forecast-120,parking-forecast-240?limit=200&offset=0&shownull=false&distinct=false&select=scode,mvalue,mperiod,mvalidtime").then(
+                function(response){
+                        let data = response.data.data;
 					});
 				});
 			}
@@ -177,7 +125,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 				}
 			}
 		}
-
+        
 		self.getLocation = function() {
 			leafletData.getMap('map').then(function(map) {
 				map.locate({setView: true, maxZoom: 15, watch: false, enableHighAccuracy: true});
@@ -187,23 +135,23 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 			self.updateAllPopUps = function(stations,feature,layer){
 				if (stations ){
 					stations.forEach(function(station,index){
-						if (station.id == feature.properties.stationcode && station.current){
-							var free_places = station.capacity - station.current.value
+						if (station.scode == feature.properties.stationcode && station.mvalue){
+							var free_places = station.smetadata.capacity - station.mvalue
 							var html =
 							'<div class="carpark">' +
 							'<div class="carpark-aux">' +
-							'<h2>'+station.name+'</h2>' +
+							'<h2>'+station.sname+'</h2>' +
 							'<ul>' +
-							'<li class="address"><a target="_blank" href="https://maps.google.com?saddr=Current+Location&mode=driving&daddr=' + station.latitude+','+station.longitude + '">'+ (station.mainaddress?station.mainaddress:self.i18n[self.lang].not_available) +'</a></li>' +
-							'<li class="phone"><span>'+ (station.phonenumber?station.phonenumber:self.i18n[self.lang].not_available) + '</span></li>' +
+							'<li class="address"><a target="_blank" href="https://maps.google.com?saddr=Current+Location&mode=driving&daddr=' + station.scoordinate.y+','+station.scoordinate.x + '">'+ (station.smetadata.mainaddress?station.smetadata.mainaddress:self.i18n[self.lang].not_available) +'</a></li>' +
+							'<li class="phone"><span>'+ (station.smetadata.phonenumber?station.smetadata.phonenumber:self.i18n[self.lang].not_available) + '</span></li>' +
 							'</ul>' +
 							'<div class="slots">' +
 							'<strong class="available-slots '+ (free_places>10?'available ':''+free_places<=15&&free_places>0?'almost-full ':''+
 							free_places == 0 ? 'full':'') +'">'+
 							'<span class="number">'+ free_places +  '</span>' +
 							'<span class="value_type">'+self.i18n[self.lang].free_slots+'</span><span class="value_time"></span>' +
-							'</strong>'+ self.i18n[self.lang].out_of + ' <strong>' + station.capacity + ' ' + self.i18n[self.lang].available_slots + '</strong><br/>' +
-							'updated <span>' + moment(station.current.timestamp).fromNow() + '</span>' +
+							'</strong>'+ self.i18n[self.lang].out_of + ' <strong>' + station.smetadata.capacity + ' ' + self.i18n[self.lang].available_slots + '</strong><br/>' +
+							'updated <span>' + moment(station.mvalidtime).fromNow() + '</span>' +
 							'</div>'+
 							'</div>' +
 							'</div>'
@@ -224,6 +172,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 				format_options:'callback:angular.callbacks._' + $window.angular.callbacks.$$counter, //workaround for strange geoserver requestparams
 			};
 			$http.jsonp(geoserver_parking,{params : defaultParameters}).then(function(response){
+                console.log(response);
 				if (response.status==200){
 					angular.extend(self.geojson, {
 						parking :{
