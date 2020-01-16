@@ -26,10 +26,10 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 	var self = $scope;
 	function startApp(position){
 		self.currentPosition = position;
-		self.getData();
+		self.getData(self.getAllPredictions);
 	};
 	function startAppWithoutLocation(){
-		self.getData();
+		self.getData(self.getAllPredictions);
 	}
 	self.conditionalSorting = function(obj){
 		if (self.currentPosition && obj.scoordinate.y && obj.scoordinate.x){
@@ -44,10 +44,39 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 			}
 		}
 		self.getAllPredictions = function(){
-			if (self.stations && self.stations.length>0){
-				self.stations.forEach(function(value,index){
-					self.getPrediction(value.id,240);
-				});
+			if (self.data && self.data.length>0){
+                var datamap = {};
+			    var now = new Date().getTime();
+                var later = now+60*1000*60*4;
+                $http.get(endpoint + "parking-forecast-30,parking-forecast-60,parking-forecast-120,parking-forecast-240/"+moment(now).format("YYYY-MM-DDTHH:mm:ss")+"/"+moment(later).format("YYYY-MM-DDTHH:mm:ss")+"?limit=200&offset=0&shownull=false&distinct=false&select=scode,mvalue,mperiod,mvalidtime").then(function(response){
+                        let data = response.data.data;
+                        self.predictions = data.reduce((map,item) => (map[item.scode] ? map[item.scode].push(item):map[item.scode]=[item] , map),{});
+                        
+                        drawCharts();
+					});
+			    function drawCharts(){
+    				for (stationId in self.predictions){
+				        var data = [];
+                        for (i in self.predictions[stationId]){
+	    				    var point = {x:new Date(self.predictions[stationId][i].mvalidtime),y:self.predictions[stationId][i].mvalue};
+		    			    data.push(point);
+                        }
+				        data.sort((a,b)=> (a.x.getTime()-b.x.getTime()));
+       				    var series = [{name:'station'+stationId, data:data}];
+	    			    if ( !self.chartData)
+		    			    self.chartData={};
+			    	    self.chartData[stationId]={series:series};
+    			    	self.options={
+	    	    			axisX: {
+		        				type: Chartist.FixedScaleAxis,
+	    		    			divisor: 5,
+    				    		labelInterpolationFnc: function(value) {
+					    		    return moment(value).format('HH:mm');
+						        }
+					        }
+				        }
+			    	}
+			    }
 			}
 		}
 		self.filterByCity = function(station){
@@ -80,52 +109,22 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 					}
 				}
 			});
-			$interval(self.getStations,1000*60*60);
+			$interval(self.getData,1000*5*60);
+			$interval(self.getAllPredictions,1000*60);
 		}
 		self.getData = function(callback){
 			$http.get(endpoint+'occupied?limit=200&offset=0&shownull=false&distinct=true').then(function(response){
 				if (response.status==200){
                     let data = response.data.data;
 					self.data = data;
-                    let distinctMunicipalities = [...new Set(data.map(item => item.smetadata.municipality))].sort();
-                    self.mMap = distinctMunicipalities.reduce((map,item) => (map[item] ={active:item.indexOf('Bozen')!=-1,value:item},map),{});
+                    if (self.mMap){
+                        let distinctMunicipalities = [...new Set(data.map(item => item.smetadata.municipality))].sort();
+                        self.mMap = distinctMunicipalities.reduce((map,item) => (map[item] ={active:item.indexOf('Bozen')!=-1,value:item},map),{});
+                    }
 				    if (callback && (typeof callback == "function")) callback();
 				}
 			});
 		}
-		self.getPrediction = function(stationid,minutesTo){
-			var datamap = {};
-			var now = new Date().getTime();
-			
-		    $http.get(endpoint + "parking-forecast-30,parking-forecast-60,parking-forecast-120,parking-forecast-240?limit=200&offset=0&shownull=false&distinct=false&select=scode,mvalue,mperiod,mvalidtime").then(
-                function(response){
-                        let data = response.data.data;
-					});
-				});
-			}
-			function drawChart(){
-				var data = [];
-				for (key in datamap){
-					var point = {x:new Date(datamap[key].timestamp),y:datamap[key].value};
-					data.push(point);
-				}
-				data.sort((a,b)=> (a.x.getTime()-b.x.getTime()));
-				var series = [{name:'station'+stationid, data:data}];
-				if ( !self.chartData)
-					self.chartData={};
-				self.chartData[stationid]={series:series};
-				self.options={
-					axisX: {
-						type: Chartist.FixedScaleAxis,
-						divisor: 5,
-						labelInterpolationFnc: function(value) {
-							return moment(value).format('HH:mm');
-						}
-					}
-				}
-			}
-		}
-        
 		self.getLocation = function() {
 			leafletData.getMap('map').then(function(map) {
 				map.locate({setView: true, maxZoom: 15, watch: false, enableHighAccuracy: true});
