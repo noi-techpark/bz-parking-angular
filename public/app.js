@@ -154,7 +154,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 							'<div class="carpark-aux">' +
 							'<h2>'+station.sname+'</h2>' +
 							'<ul>' +
-							'<li class="address"><a target="_blank" href="https://maps.google.com?saddr=Current+Location&mode=driving&daddr=' + station.scoordinate.y+','+station.scoordinate.x + '">'+ (station.smetadata.mainaddress?station.smetadata.mainaddress:self.i18n[self.lang].not_available) +'</a></li>' +
+							'<li class="address"><a target="_blank" href="https://maps.google.com?saddr=My+Location&mode=driving&daddr=' + station.scoordinate.y+','+station.scoordinate.x + '">'+ (station.smetadata.mainaddress?station.smetadata.mainaddress:self.i18n[self.lang].not_available) +'</a></li>' +
 							'<li class="phone"><span>'+ (station.smetadata.phonenumber?station.smetadata.phonenumber:self.i18n[self.lang].not_available) + '</span></li>' +
 							'</ul>' +
 							'<div class="slots">' +
