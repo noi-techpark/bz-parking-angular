@@ -63,7 +63,6 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
                                 map[item.scode]= {};
                                 map[item.scode][item.mvalidtime] = item;
                             }
-                            console.log(map);
                             return map;
                         },{});
                         drawCharts();
