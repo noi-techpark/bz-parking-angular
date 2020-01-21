@@ -58,7 +58,7 @@
 					<div class="carpark-aux">
 						<h2>{{station.sname}}</h2>
 						<ul>
-							<li class="address"><a target="_blank" href="https://maps.google.com?saddr=My+Location&mode=driving&daddr={{station.scoordinates.y}},{{station.scoordinates.x}}">{{station.smetadata.mainaddress||i18n[lang].not_available}}</a></li>
+							<li class="address"><a target="_blank" href="https://maps.google.com?saddr=My+Location&mode=driving&daddr={{station.scoordinate.y}},{{station.scoordinate.x}}">{{station.smetadata.mainaddress||i18n[lang].not_available}}</a></li>
 							<li class="phone"><span>{{station.smetadata.phonenumber||i18n[lang].not_available}}</span></li>
 
 						</ul>
