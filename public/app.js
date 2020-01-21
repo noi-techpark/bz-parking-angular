@@ -46,12 +46,26 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 		self.getAllPredictions = function(){
 			if (self.data && self.data.length>0){
                 var datamap = {};
-			    var now = new Date().getTime();
-                var later = now+60*1000*60*4;
-                $http.get(endpoint + "parking-forecast-30,parking-forecast-60,parking-forecast-120,parking-forecast-240/"+moment(now).format("YYYY-MM-DDTHH:mm:ss")+"/"+moment(later).format("YYYY-MM-DDTHH:mm:ss")+"?limit=200&offset=0&shownull=false&distinct=false&select=scode,mvalue,mperiod,mvalidtime").then(function(response){
+			    var now = new Date();
+                var later = new Date(now.getTime()+60*1000*60*4);
+                $http.get(endpoint + "parking-forecast-30,parking-forecast-60,parking-forecast-120,parking-forecast-240/"+now.toISOString()+"/"+later.toISOString()+"?limit=-1&offset=0&shownull=false&distinct=false&select=scode,mvalue,mperiod,mvalidtime").then(function(response){
                         let data = response.data.data;
-                        self.predictions = data.reduce((map,item) => (map[item.scode] ? map[item.scode].push(item):map[item.scode]=[item] , map),{});
-                        
+                        self.predictions = data.reduce(function(map,item) {
+                            if (map[item.scode]){
+                                if (map[item.scode][item.mvalidtime]){
+                                    if (map[item.scode][item.mvalidtime].mperiod > item.mperiod){
+                                        map[item.scode][item.mvalidtime] = item;
+                                    }
+                                }else{
+                                    map[item.scode][item.mvalidtime] = item;
+                                }
+                            } else {
+                                map[item.scode]= {};
+                                map[item.scode][item.mvalidtime] = item;
+                            }
+                            console.log(map);
+                            return map;
+                        },{});
                         drawCharts();
 					});
 			    function drawCharts(){
