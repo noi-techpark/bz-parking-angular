@@ -184,7 +184,6 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 				format_options:'callback:angular.callbacks._' + $window.angular.callbacks.$$counter, //workaround for strange geoserver requestparams
 			};
 			$http.jsonp(geoserver_parking,{params : defaultParameters}).then(function(response){
-                console.log(response);
 				if (response.status==200){
 					angular.extend(self.geojson, {
 						parking :{
@@ -209,11 +208,11 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
 							},
 							onEachFeature: function(feature,layer){
 								if (feature.properties && feature.properties.stationcode){
-									self.$watch('stations',function(stations){
+									self.$watch('data',function(stations){
 										self.updateAllPopUps(stations,feature,layer);
 									},true);
 									self.$watch('lang',function(lang){
-										self.updateAllPopUps(self.stations,feature,layer);
+										self.updateAllPopUps(self.data,feature,layer);
 									});
 								}
 							}
