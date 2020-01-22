@@ -122,8 +122,8 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
                 }
             }
         });
-        $interval(self.getData,1000*5*60);
-        $interval(self.getAllPredictions,1000*60);
+        $interval(self.getData,1000*60);
+        $interval(self.getAllPredictions,1000*60*4);
     }
     self.getData = function(callback){
         $http.get(endpoint+'occupied?limit=200&offset=0&shownull=false&distinct=true').then(function(response){
