@@ -130,7 +130,8 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
             if (response.status==200){
                 let data = response.data.data;
                 self.data = data;
-                if (self.mMap){
+                console.log(self.mMap);
+                if (Object.entries(self.mMap).length === 0){
                     let distinctMunicipalities = [...new Set(data.map(item => item.smetadata.municipality))].sort();
                     self.mMap = distinctMunicipalities.reduce((map,item) => (map[item] ={active:item.indexOf('Bozen')!=-1,value:item},map),{});
                 }
