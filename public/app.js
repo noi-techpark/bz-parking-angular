@@ -133,7 +133,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
                 console.log(self.mMap);
                 if (Object.entries(self.mMap).length === 0){
                     let distinctMunicipalities = [...new Set(data.map(item => item.smetadata.municipality))].sort();
-                    self.mMap = distinctMunicipalities.reduce((map,item) => (map[item] ={active:item.indexOf('Bozen')!=-1,value:item},map),{});
+                    self.mMap = distinctMunicipalities.reduce((map,item) => (map[item] ={active:item&&item.indexOf('Bozen')!=-1,value:item},map),{});
                 }
                 if (callback && (typeof callback == "function")) callback();
             }
