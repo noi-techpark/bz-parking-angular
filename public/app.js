@@ -1,5 +1,5 @@
 var parking= angular.module('parking', ['leaflet-directive','angular-chartist']);
-var endpoint = 'https://mobility.api.opendatahub.bz.it/v2/api/flat/ParkingStation/';
+var endpoint = 'https://mobility.api.opendatahub.bz.it/v2/api/flat/ParkingStation,ParkingSensor/';
 var geoserver_parking = 'https://ipchannels.integreen-life.bz.it/geoserver/edi/ows';
 parking.config(function ($sceDelegateProvider,) {
     $sceDelegateProvider.resourceUrlWhitelist([
@@ -128,9 +128,8 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
     self.getData = function(callback){
         $http.get(endpoint+'occupied?limit=-1&offset=0&shownull=false&distinct=true').then(function(response){
             if (response.status==200){
-                let data = response.data.data;
+                let data = convertSensorsToStations(response.data.data);
                 self.data = data;
-                console.log(self.mMap);
                 if (Object.entries(self.mMap).length === 0){
                     let distinctMunicipalities = [...new Set(data.map(item => item.smetadata.municipality))].sort();
                     self.mMap = distinctMunicipalities.reduce((map,item) => (map[item] ={active:item&&item.indexOf('Bozen')!=-1,value:item},map),{});
@@ -138,6 +137,23 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
                 if (callback && (typeof callback == "function")) callback();
             }
         });
+        convertSensorsToStations = function(data){
+            parkingStations = data.filter(s=> s.stype=='ParkingSensor').reduce((stations,sensor) =>{
+                let station = stations[sensor.smetadata.group];
+                if (station == undefined){
+                    station = sensor;
+                    station.sname=sensor.smetadata.group;
+                    station.smetadata.capacity =1;
+                    station.stype='ParkingStation';
+                    stations[station.sname]=station;
+                }else{
+                    station.mvalue += sensor.mvalue;
+                    station.smetadata.capacity ++;
+                }
+                return stations;
+            },[]);
+            return [].concat(data.filter(s=> s.stype=='ParkingStation'),parkingStations);
+        }
     }
     self.getLocation = function() {
         leafletData.getMap('map').then(function(map) {
