@@ -126,7 +126,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
         $interval(self.getAllPredictions,1000*60*4);
     }
     self.getData = function(callback){
-        $http.get(endpoint+'occupied?limit=200&offset=0&shownull=false&distinct=true').then(function(response){
+        $http.get(endpoint+'occupied?limit=-1&offset=0&shownull=false&distinct=true').then(function(response){
             if (response.status==200){
                 let data = response.data.data;
                 self.data = data;
