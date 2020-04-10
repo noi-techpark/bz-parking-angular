@@ -134,6 +134,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
                     let distinctMunicipalities = [...new Set(data.map(item => item.smetadata.municipality))].sort();
                     self.mMap = distinctMunicipalities.reduce((map,item) => (map[item] ={active:item&&item.indexOf('Bozen')!=-1,value:item},map),{});
                 }
+                drawGJ();
                 if (callback && (typeof callback == "function")) callback();
             }
         });
@@ -160,7 +161,6 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
            map.locate({setView: true, maxZoom: 15, watch: false, enableHighAccuracy: true});
         });
     }
-    self.getWFSLayer = function(){
         self.updateAllPopUps = function(stations,feature,layer){
             if (stations ){
                 stations.forEach(function(station,index){
@@ -190,21 +190,11 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
                 });
             }
         }
-        var defaultParameters = {
-            service: 'WFS',
-            version: '1.1.0',
-            request: 'GetFeature',
-            typeName: 'edi:parking',
-            maxFeatures: 200,
-            outputFormat: 'text/javascript',
-            srsName:'EPSG:4326',
-            format_options:'callback:angular.callbacks._' + $window.angular.callbacks.$$counter, //workaround for strange geoserver requestparams
-        };
-        $http.jsonp(geoserver_parking,{params : defaultParameters}).then(function(response){
-            if (response.status==200){
+        function drawGJ(){
+                let gj = convertToGeoJson(self.data);
                 angular.extend(self.geojson, {
                     parking :{
-                        data: response.data,
+                        data: gj,
                         pointToLayer: function(feature, latlng) {
                             var image =  'marker-icon-grey.png';
                             var current = feature.properties.occupacypercentage;
@@ -234,7 +224,41 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
                         }
                     }
                 });
+        }
+        function convertToGeoJson(data){
+            let gj =    {
+                type: "FeatureCollection",
+                features: [],
+                totalFeatures: data.length,
+                numberMatched: data.length,
+                numberReturned: data.length,
+                timeStamp: "2020-04-10T13:19:01.589Z",
+                crs: {
+                    type: "name",
+                    properties: {
+                        name: "urn:ogc:def:crs:EPSG::4326"
+                    }
+                }
             }
-        });
-    }
+            data.forEach(function(station,index){
+             let obj ={
+                    type: "Feature",
+                    id: station.id,
+                    geometry: {
+                        type: "Point",
+                        coordinates: [
+                            station.scoordinate.x,
+                            station.scoordinate.y
+                        ]
+                    },
+                    geometry_name: "pointprojection",
+                    properties: {
+                        stationcode: station.scode,
+                        occupacypercentage: station.mvalue / station.smetadata.capacity * 100
+                    }
+              }
+              console.log(obj.properties.occupacypercentage);
+            });
+            return gj;
+        }
 });
