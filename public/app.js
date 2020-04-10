@@ -257,7 +257,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
                         occupacypercentage: station.mvalue / station.smetadata.capacity * 100
                     }
               }
-              console.log(obj.properties.occupacypercentage);
+              gj.features.push(obj);
             });
             return gj;
         }

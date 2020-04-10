@@ -74,7 +74,7 @@
 					</div>
 				</div>
 			</div>
-			<div ng-if="page=='map'" id="map" ng-init="getLocation();getWFSLayer()">
+			<div ng-if="page=='map'" id="map" ng-init="getLocation();">
 				<leaflet center="southTyrol" layers="layers" geojson-nested="true" width="100vw" height="90vh" geojson="geojson" ></leaflet>
 			</div>
 		</div>
