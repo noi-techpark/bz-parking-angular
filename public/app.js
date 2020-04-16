@@ -142,10 +142,12 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
             parkingStations = data.filter(s=> s.stype=='ParkingSensor').reduce((stations,sensor) =>{
                 let station = stations[sensor.smetadata.group];
                 if (station == undefined){
-                    station = sensor;
+                    station = JSON.parse(JSON.stringify(sensor));
                     station.sname=sensor.smetadata.group;
                     station.smetadata.capacity =1;
+                    station['virtual']=true;
                     station.stype='ParkingStation';
+                    station.scode=station.scode+'-virtual';
                     stations[station.sname]=station;
                 }else{
                     station.mvalue += sensor.mvalue;
@@ -153,7 +155,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
                 }
                 return stations;
             },[]);
-            return [].concat(data.filter(s=> s.stype=='ParkingStation'),parkingStations);
+            return [].concat(data,Object.values(parkingStations));
         }
     }
     self.getLocation = function() {
@@ -164,8 +166,8 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
         self.updateAllPopUps = function(stations,feature,layer){
             if (stations ){
                 stations.forEach(function(station,index){
-                    if (station.scode == feature.properties.stationcode && station.mvalue){
-                        var free_places = station.smetadata.capacity - station.mvalue
+                    if (station.scode == feature.properties.stationcode && station.mvalue!=undefined){
+                        var free_places = station.stype==='ParkingSensor'? (station.mvalue*-1+1) :station.smetadata.capacity - station.mvalue;
                         var html =
                             '<div class="carpark">' +
                             '<div class="carpark-aux">' +
@@ -179,7 +181,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
                             free_places == 0 ? 'full':'') +'">'+
                             '<span class="number">'+ free_places +  '</span>' +
                             '<span class="value_type">'+self.i18n[self.lang].free_slots+'</span><span class="value_time"></span>' +
-                            '</strong>'+ self.i18n[self.lang].out_of + ' <strong>' + station.smetadata.capacity + ' ' + self.i18n[self.lang].available_slots + '</strong><br/>' +
+                            '</strong>'+ self.i18n[self.lang].out_of + ' <strong>' + (station.smetadata.capacity ? station.smetadata.capacity : '1') + ' ' + self.i18n[self.lang].available_slots + '</strong><br/>' +
                             'updated <span>' + moment(station.mvalidtime).fromNow() + '</span>' +
                             '</div>'+
                             '</div>' +
@@ -191,7 +193,7 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
             }
         }
         function drawGJ(){
-                let gj = convertToGeoJson(self.data);
+                const gj = convertToGeoJson(self.data);
                 angular.extend(self.geojson, {
                     parking :{
                         data: gj,
@@ -241,23 +243,25 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
                 }
             }
             data.forEach(function(station,index){
-             let obj ={
-                    type: "Feature",
-                    id: station.id,
-                    geometry: {
-                        type: "Point",
-                        coordinates: [
-                            station.scoordinate.x,
-                            station.scoordinate.y
-                        ]
-                    },
-                    geometry_name: "pointprojection",
-                    properties: {
-                        stationcode: station.scode,
-                        occupacypercentage: station.mvalue / station.smetadata.capacity * 100
-                    }
+             if (station.virtual !== true){
+                let obj ={
+                        type: "Feature",
+                        id: station.id,
+                        geometry: {
+                            type: "Point",
+                            coordinates: [
+                                station.scoordinate.x,
+                                station.scoordinate.y
+                          ]
+                        },
+                        geometry_name: "pointprojection",
+                        properties: {
+                            stationcode: station.scode,
+                            occupacypercentage: station.stype==='ParkingStation' ? station.mvalue / station.smetadata.capacity * 100 : 100*(station.mvalue)
+                        }
+                }
+                gj.features.push(obj);
               }
-              gj.features.push(obj);
             });
             return gj;
         }
