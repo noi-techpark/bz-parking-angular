@@ -152,6 +152,8 @@ parking.controller('parking',function($scope,$http,$interval,$window,leafletData
                 }else{
                     station.mvalue += sensor.mvalue;
                     station.smetadata.capacity ++;
+                    if (station.mvalidtime < sensor.mvalidtime)
+                        station.mvalidtime = sensor.mvalidtime;
                 }
                 return stations;
             },[]);
