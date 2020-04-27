@@ -1,5 +1,5 @@
 var parking= angular.module('parking', ['leaflet-directive','angular-chartist']);
-var endpoint = 'https://mobility.api.opendatahub.bz.it/v2/api/flat/ParkingStation,ParkingSensor/';
+var endpoint = 'https://mobility.api.opendatahub.bz.it/v2/flat/ParkingStation,ParkingSensor/';
 var geoserver_parking = 'https://ipchannels.integreen-life.bz.it/geoserver/edi/ows';
 parking.config(function ($sceDelegateProvider,) {
     $sceDelegateProvider.resourceUrlWhitelist([
