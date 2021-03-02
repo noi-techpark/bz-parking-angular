@@ -1,14 +1,9 @@
 {
     "compilerOptions": {
         "allowJs": true,
-        "outDir": "./dist",
-        // "lib": [ "es2017" ]
+        "outDir": "./dist"
     },
     "include": [
         "./*"
-    ],
-    // "lib": [
-    //     "es2017",
-    //     "dom"
-    // ]
+    ]
 }

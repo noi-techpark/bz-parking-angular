@@ -125,8 +125,6 @@ parking.controller(
     };
     self.filterByCity = function (station) {
       // solves error "municipality of undefined"
-      console.log(station);
-      console.log(station.smetadata.municipality);
       if (station.smetadata && station.smetadata.municipality in self.mMap) {
         // if (station.smetadata && station.smetadata.municipality) {
         return self.mMap[station.smetadata.municipality].active;
@@ -229,7 +227,9 @@ parking.controller(
                 obj[distinctMunicipalities[0][0][i]] = true;
               }
               for (var key in obj) {
-                ret_arr.push(key);
+                if(key && key !== 'undefined'){
+                  ret_arr.push(key);
+                }
               }
               self.mMap = ret_arr;
               console.log(self.mMap);
