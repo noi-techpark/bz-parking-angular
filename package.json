@@ -23,5 +23,7 @@
   "homepage": "https://github.com/idm-suedtirol/bz-parking-angular#readme",
   "dependencies": {
     "geolib": "^2.0.24"
+    "tsc": "^1.20150623.0",
+    "typescript": "^4.1.3"
   }
 }

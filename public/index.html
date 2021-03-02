@@ -47,14 +47,20 @@
 				<li ng-repeat="item in mMap" ng-class="item.active?'active city':'city'"><a href="javascript:void(0)" ng-click="mMap[item.value].active=!item.active" class="round">{{item.value}}</a></li>
 			</ul>
 		</div>
-		<aside ng-init="mMap={}">
+		<aside ng-init="mMap={['Bozen-Bolzano', 'Meran-Merano', 'Trient-Trento', 'Rovereto']}">
+			<p>
+				{{mMap}}
+			</p>
 			<ul>
 				<li ng-repeat="item in mMap" ng-class="item.active?'active city':'city'"><a href="javascript:void(0)" ng-click="mMap[item.value].active=!item.active" class="round">{{item.value}}</a></li>
 			</ul>
 		</aside>
 		<div ng-init="init();">
 			<div ng-show="page=='list'" class="aux listing">
-                <div ng-repeat="station in data|orderBy:conditionalSorting|filter: filterByCity|filter: {stype:'ParkingStation'}" class="carpark box">
+				Length: {{data.length}}
+                <!--<div ng-repeat="station in data" class="carpark box">
+					Name: {{station.sname}}
+                <!--<div ng-repeat="station in data|orderBy:conditionalSorting|filter: filterByCity|filter: {stype:'ParkingStation'}" *ngFor='station in data' class="carpark box">
 					<div class="carpark-aux">
 						<h2><a href="javascript:void(0)" style="color:#58595b;border:none" title="{{station.sname}}">{{station.sname|limitTo:26}}{{station.sname.length>26 ? '...' : ''}}</a></h2>
 						<ul>
@@ -72,7 +78,7 @@
 
 						<chartist id="chart{{station.scode}}" chartist-data="chartData[station.scode]" chartist-chart-type="Line" chartist-chart-options="options"></chartist>
 					</div>
-				</div>
+				</div>-->
 			</div>
 			<div ng-if="page=='map'" id="map" ng-init="getLocation();">
 				<leaflet center="southTyrol" layers="layers" geojson-nested="true" width="100vw" height="90vh" geojson="geojson" ></leaflet>
