@@ -1,4 +1,4 @@
-images/* --------------------------------------------------
+/*images*//* --------------------------------------------------
 Theme Name: BZ Parking
 file: standard.css
 author: Madeincima.it
@@ -83,7 +83,7 @@ author: Madeincima.it
 	.lang ul{position:absolute;top:2.3em;left:0;min-width:50px;background:#5c5a65}
 	.lang a{color:#fff;border:0;padding:.4em .45em;display:block}
 
-	.main{float:left;width:100%;padding:1.5em 0 1em 0;width:100%position:relative;z-index:0}
+	.main{float:left;width:100%;padding:1.5em 0 1em 0;width:100%;position:relative;z-index:0}
 
 	.actions{position:fixed;z-index: 2000;width:82px;left:50%;margin-top:25px; min-height: 40px;}
 	.actions a{border:0}
@@ -141,7 +141,7 @@ author: Madeincima.it
 	.aside .buttons em{font-style:normal;font-family: 'titillium_webbold',arial,sans-serif}
 	.share-btn{background:#0a99d4;text-shadow:1px 1px 1px #065b7e;display:none}
 	.developers-btn{
-		background:#76c419;no-repeat;
+		background:#76c419;background-repeat:no-repeat;
 		text-shadow:1px 1px 1px #3e6f03;
 		margin: 10px 20px;
 		min-height: 76px;
@@ -428,7 +428,7 @@ only screen and (min-resolution: 2dppx){
 #map .slots{right:5px}
 #map .available-slots{padding-top: 0.4em}
 #map .available-slots .number{margin-bottom:0}
-#map .forecast h3{right:6px;to:-2.9em}
+#map .forecast h3{right:6px;top:-2.9em}
 #map .leaflet-container a.leaflet-popup-close-button{border:0}
 #map a{color:#009CDD}
 #map.leaflet-container a.leaflet-popup-close-button{border:0}

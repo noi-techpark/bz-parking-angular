@@ -124,12 +124,13 @@ parking.controller(
       }
     };
     self.filterByCity = function (station) {
-      // solves error "municipality of undefined"
-      if (station.smetadata && station.smetadata.municipality in self.mMap) {
-        // if (station.smetadata && station.smetadata.municipality) {
-        return self.mMap[station.smetadata.municipality].active;
-      } else {
-        // console.log(station.smetadata);
+      let cities: string[] = [];
+      self.mMap.forEach(element => {
+        cities.push(element.value);
+      });
+
+      if (station.smetadata && cities.includes(station.smetadata.municipality)) {
+        return self.mMap[cities.indexOf(station.smetadata.municipality)].active;
       }
       return false;
     };
@@ -197,9 +198,7 @@ parking.controller(
         .then(function (response) {
           if (response.status == 200) {
             let data = convertSensorsToStations(response.data.data);
-            console.log(data);
             self.data = data;
-            // console.log(self.mMap);
             if (!self.mMap || Object.keys(self.mMap).length === 0) {
               let distinctMunicipalities = [
                 new Array(
@@ -220,19 +219,22 @@ parking.controller(
               //     );
               //   }, {});
               var obj = {};
-              var ret_arr = [];
-              console.log(distinctMunicipalities);
+              var arr = [];
               for (var i = 0; i < distinctMunicipalities[0][0].length; i++) {
-                  
+                
                 obj[distinctMunicipalities[0][0][i]] = true;
-              }
+              }let j = 0;
               for (var key in obj) {
                 if(key && key !== 'undefined'){
-                  ret_arr.push(key);
+                  arr[j] = {};
+                  arr[j].index = j;
+                  arr[j].value = key;
+                  arr[j].active = false;
                 }
+                j++;
               }
-              self.mMap = ret_arr;
-              console.log(self.mMap);
+              arr[0].active = true;
+              self.mMap = arr;
             }
             
             drawGJ();

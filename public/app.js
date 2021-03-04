@@ -122,12 +122,20 @@ parking.controller("parking", function ($scope, $http, $interval, $window, leafl
         }
     };
     self.filterByCity = function (station) {
+        var cities = [];
+        self.mMap.forEach(function (element) {
+            cities.push(element.value);
+        });
         // solves error "municipality of undefined"
-        if (station.smetadata && station.smetadata.municipality in self.mMap) {
-            // if (station.smetadata && station.smetadata.municipality) {
-            return self.mMap[station.smetadata.municipality].active;
-        }
-        else {
+        if (station.smetadata) {
+            if (cities.includes(station.smetadata.municipality)) {
+                console.log('++');
+                // if (station.smetadata && station.smetadata.municipality) {
+                return self.mMap[cities.indexOf(station.smetadata.municipality)].active;
+            }
+            else {
+                console.log('--');
+            }
         }
         return false;
     };
@@ -212,14 +220,20 @@ parking.controller("parking", function ($scope, $http, $interval, $window, leafl
                     //   }, {});
                     var obj = {};
                     var ret_arr = [];
-                    console.log(distinctMunicipalities);
                     for (var i = 0; i < distinctMunicipalities[0][0].length; i++) {
                         obj[distinctMunicipalities[0][0][i]] = true;
                     }
+                    var j = 0;
                     for (var key in obj) {
                         if (key && key !== 'undefined') {
-                            ret_arr.push(key);
+                            ret_arr[j] = {};
+                            ret_arr[j].index = j;
+                            ret_arr[j].value = key;
+                            ret_arr[j].active = false;
+                            j++;
                         }
+                    }
+                    for (var i_1 = 0; i_1 < 4; i_1++) {
                     }
                     self.mMap = ret_arr;
                     console.log(self.mMap);

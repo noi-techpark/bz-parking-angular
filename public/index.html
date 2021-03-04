@@ -44,22 +44,21 @@
 	<main id="main" class="main" ng-controller="parking">
 		<div ng-show="showCities" class="cityshow">
 			<ul class="mobile-cities listing">
-				<li ng-repeat="item in mMap" ng-class="item.active?'active city':'city'"><a href="javascript:void(0)" ng-click="mMap[item.value].active=!item.active" class="round">{{item}}</a></li>
+				<li ng-repeat="item in mMap" ng-class="item.active?'active city':'city'"><a href="javascript:void(0)" ng-click="mMap[item.value].active=!item.active" class="round">{{item.value}}</a></li>
 			</ul>
 		</div>
 		<aside ng-init="mMap={}">
 			<ul>
-				<li ng-repeat="item in mMap" ng-class="item.active?'active city':'city'"><a href="javascript:void(0)" ng-click="mMap[item.value].active=!item.active" class="round">{{item}}</a></li>
+				<li ng-repeat="item in mMap" ng-class="item.active?'active city':'city'"><a href="javascript:void(0)" ng-click="mMap[item.index].active=!item.active" class="round">{{item.value}}</a></li>
 			</ul>
 		</aside>
 		<div ng-init="init();">
 			<div ng-show="page=='list'" class="aux listing">
-                <!--<div ng-repeat="station in data" class="carpark box">-->
                 <div ng-repeat="station in data|orderBy:conditionalSorting|filter: filterByCity|filter: {stype:'ParkingStation'}" class="carpark box">
 					<div class="carpark-aux">
 						<h2><a href="javascript:void(0)" style="color:#58595b;border:none" title="{{station.sname}}">{{station.sname|limitTo:26}}{{station.sname.length>26 ? '...' : ''}}</a></h2>
 						<ul>
-							<li class="address"><a target="_blank" href="https://maps.google.com?saddr=My+Location&mode=driving&daddr={{station.scoordinate.y}},{{station.scoordinate.x}}">{{station.smetadata.mainaddress||i18n[lang].not_available}}</a></li>
+							<li class="address"><a target="_blank" href="https://maps.google.com?saddr=My+Location&mode=driving&daddr={{station.scoordinate.y}},{{station.scoordinate.x}}">{{station.smetadata.mainaddress||station.sname||i18n[lang].not_available}}</a></li>
 							<li class="phone"><span>{{station.smetadata.phonenumber||i18n[lang].not_available}}</span></li>
 
 						</ul>
