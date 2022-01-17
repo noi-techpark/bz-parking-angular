@@ -1,0 +1,23 @@
+name: ci bz-parking-angular
+
+on:
+  push:
+    branches: [ master, development ]
+    paths:
+      - "!README.md"
+  pull_request:
+    branches: [ master, development ]
+    paths:
+      - "!README.md"
+      
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Test
+        run: test -f public/index.html
