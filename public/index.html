@@ -21,17 +21,22 @@
 
 	<!-- Matomo -->
 	<script>
-		var _paq = window._paq = window._paq || [];
-		/* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-		_paq.push(['trackPageView']);
-		_paq.push(['enableLinkTracking']);
-		(function() {
-			var u="https://digital.matomo.cloud/";
-			_paq.push(['setTrackerUrl', u+'matomo.php']);
-			_paq.push(['setSiteId', '7']);
-			var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-			g.async=true; g.src='//cdn.matomo.cloud/digital.matomo.cloud/matomo.js'; s.parentNode.insertBefore(g,s);
-		})();
+		var cookieValue = document.cookie.replace(
+        /(?:(?:^|.*;\s*)banner\s*\=\s*([^;]*).*$)|^.*$/,
+        "$1");
+		if (cookieValue === "accepted") {
+			var _paq = window._paq = window._paq || [];
+			/* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+			_paq.push(['trackPageView']);
+			_paq.push(['enableLinkTracking']);
+			(function() {
+				var u="https://digital.matomo.cloud/";
+				_paq.push(['setTrackerUrl', u+'matomo.php']);
+				_paq.push(['setSiteId', '7']);
+				var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+				g.async=true; g.src='//cdn.matomo.cloud/digital.matomo.cloud/matomo.js'; s.parentNode.insertBefore(g,s);
+			})();
+		}
   	</script>
   	<!-- End Matomo Code -->
   
@@ -105,18 +110,7 @@
 			</div>
 		</div>
 	</main>
-	<footer id="footer-2" class="footer-2">
-		<div class="aux">
-			<div class="aux2">
-				<ul>
-					<li class="first "><a href="http://www.provincia.bz.it/europa/it/finanziamenti-ue/competitivit%C3%A0-regionale-ed-occupazione-fesr.asp" target="_blank"><img src="images/logo-eu.jpg" alt="Logo FESR EU"></a></li>
-					<li class=""><a href="http://www.comune.bolzano.it/" target="_blank"><img src="images/logo-bz.jpg" alt="Logo Comune di Bolzano"></a></li>
-					<li class=""><a href="http://www.idm-suedtirol.com" target="_blank"><img src="images/logo-idm.jpg" alt="Logo IDM-S&uuml;dtirol - Alto Adige"></a></li>
-				</ul>
-			</div>
-		</div>
-	</footer>
-	<div class="alert alert-cookie" style="display: none;">
+	<div class="alert-cookie" style="display: none;">
         <p>
             <b>Cookies</b>
         </p>
@@ -124,7 +118,10 @@
             This site or third-party tools used by this make use of cookies necessary for the operation and useful for the purposes described in the cookie policy. If you want to learn more or opt out of all or some cookies, consult the cookie policy. By closing
             this banner, scrolling this page, clicking on a link or continuing navigation in any other way, you consent to the use of cookies.
         </p>
-        <a class="button">Accept</a>
+		<div class="cookie-button-wrapper">
+			<a class="button cookie-accept">Accept</a>
+			<a class="button cookie-decline">Decline</a>
+		</div>
     </div>
     <script src="cookie_banner.js"></script>
 </body>

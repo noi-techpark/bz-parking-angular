@@ -25,6 +25,12 @@
     margin-bottom: 10px;
 }
 
+.alert-cookie .cookie-button-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
 .alert-cookie .button {
     margin-top: 20px;
     color: white;
