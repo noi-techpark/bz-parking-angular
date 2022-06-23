@@ -18,30 +18,25 @@
 	<link href="standard-base.css" rel="stylesheet" media="screen,projection,print" type="text/css">
 	<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
 	<link rel="stylesheet" href="cookie-banner.css">
-
+	<link rel="stylesheet" href="cookieconsent.css">
 	<!-- Matomo -->
-	<script>
-		var cookieValue = document.cookie.replace(
-        /(?:(?:^|.*;\s*)banner\s*\=\s*([^;]*).*$)|^.*$/,
-        "$1");
-		if (cookieValue === "accepted") {
-			var _paq = window._paq = window._paq || [];
-			/* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-			_paq.push(['trackPageView']);
-			_paq.push(['enableLinkTracking']);
-			(function() {
-				var u="https://digital.matomo.cloud/";
-				_paq.push(['setTrackerUrl', u+'matomo.php']);
-				_paq.push(['setSiteId', '7']);
-				var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-				g.async=true; g.src='//cdn.matomo.cloud/digital.matomo.cloud/matomo.js'; s.parentNode.insertBefore(g,s);
-			})();
-		}
+	<script type="text/plain" data-cookiecategory="targeting" >
+		var _paq = window._paq = window._paq || [];
+		/* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+		_paq.push(['trackPageView']);
+		_paq.push(['enableLinkTracking']);
+		(function() {
+			var u="https://digital.matomo.cloud/";
+			_paq.push(['setTrackerUrl', u+'matomo.php']);
+			_paq.push(['setSiteId', '7']);
+			var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+			g.async=true; g.src='//cdn.matomo.cloud/digital.matomo.cloud/matomo.js'; s.parentNode.insertBefore(g,s);
+		})();
   	</script>
   	<!-- End Matomo Code -->
-  
-	<script async="" src="https://www.googletagmanager.com/gtag/js?id=GOOGLE_ANALYTICS_ID"></script>
-    <script>
+	
+	<script async="" src="https://www.googletagmanager.com/gtag/js?id=GOOGLE_ANALYTICS_ID" type="text/plain" data-cookiecategory="targeting"></script>
+    <script type="text/plain" data-cookiecategory="targeting">
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
@@ -110,20 +105,8 @@
 			</div>
 		</div>
 	</main>
-	<div class="alert-cookie" style="display: none;">
-        <p>
-            <b>Cookies</b>
-        </p>
-        <p>
-            This site or third-party tools used by this make use of cookies necessary for the operation and useful for the purposes described in the cookie policy. If you want to learn more or opt out of all or some cookies, consult the cookie policy. By closing
-            this banner, scrolling this page, clicking on a link or continuing navigation in any other way, you consent to the use of cookies.
-        </p>
-		<div class="cookie-button-wrapper">
-			<a class="button cookie-accept">Accept</a>
-			<a class="button cookie-decline">Decline</a>
-		</div>
-    </div>
-    <script src="cookie_banner.js"></script>
+	<script defer src="cookieconsent.js"></script>
+	<script defer src="cookieconsent-init.js"></script>
 </body>
 <script type="text/javascript" src="node_modules/geolib/dist/geolib.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.2/moment-with-locales.min.js"></script>
