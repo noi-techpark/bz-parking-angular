@@ -1308,6 +1308,11 @@ only screen and (min-resolution: 2dppx) {
 	border: 0
 }
 
+/* make OSM attribution visible on mobile phone */
+.leaflet-right{
+	position: fixed;
+}
+
 #map .carpark h2 {
 	margin: 0.5em 0 1em 0;
 	padding: 0.2em;
