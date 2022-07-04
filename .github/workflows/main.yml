@@ -29,9 +29,6 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v2
 
-      - name: Configure Google Analytics
-        run: sed -i -e "s%GOOGLE_ANALYTICS_ID%${{ secrets.GOOGLE_ANALYTICS_ID_PROD }}%g" public/index.html
-
       - name: Sync to S3 bucket
         uses: noi-techpark/github-actions/aws-s3-bucket-sync@v2
         with:
