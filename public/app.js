@@ -131,7 +131,7 @@ parking.controller('parking', function ($scope, $http, $interval, $window, leafl
                 let data = convertSensorsToStations(response.data.data);
                 self.data = data;
 
-                var startinglocation = 'Bozen';
+                var startinglocation = 'bozen';
                 var queryString = window.location.search;
                 var urlParams = new URLSearchParams(queryString);
 
