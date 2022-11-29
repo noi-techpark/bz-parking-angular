@@ -135,19 +135,14 @@ parking.controller('parking', function ($scope, $http, $interval, $window, leafl
                 var queryString = window.location.search;
                 var urlParams = new URLSearchParams(queryString);
 
-
-                console.log(urlParams.get('location'));
-
                 if(urlParams.get('location'))
-                {
-                    
-                    startinglocation = urlParams.get('location');
+                {                    
+                    startinglocation = urlParams.get('location').toLowerCase();
                 }
                     
-
                 if (Object.entries(self.mMap).length === 0) {
                     let distinctMunicipalities = [...new Set(data.map(item => item.smetadata.municipality).filter(item => item != undefined))].sort();
-                    self.mMap = distinctMunicipalities.reduce((map, item) => (map[item] = { active: item && item.indexOf(startinglocation) != -1, value: item }, map), {});
+                    self.mMap = distinctMunicipalities.reduce((map, item) => (map[item] = { active: item && item.toLowerCase().indexOf(startinglocation) != -1, value: item }, map), {});
                 }
                 drawGJ();
                 if (callback && (typeof callback == "function")) callback();
