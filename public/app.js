@@ -130,9 +130,24 @@ parking.controller('parking', function ($scope, $http, $interval, $window, leafl
             if (response.status == 200) {
                 let data = convertSensorsToStations(response.data.data);
                 self.data = data;
+
+                var startinglocation = 'Bozen';
+                var queryString = window.location.search;
+                var urlParams = new URLSearchParams(queryString);
+
+
+                console.log(urlParams.get('location'));
+
+                if(urlParams.get('location'))
+                {
+                    
+                    startinglocation = urlParams.get('location');
+                }
+                    
+
                 if (Object.entries(self.mMap).length === 0) {
                     let distinctMunicipalities = [...new Set(data.map(item => item.smetadata.municipality).filter(item => item != undefined))].sort();
-                    self.mMap = distinctMunicipalities.reduce((map, item) => (map[item] = { active: item && item.indexOf('Bozen') != -1, value: item }, map), {});
+                    self.mMap = distinctMunicipalities.reduce((map, item) => (map[item] = { active: item && item.indexOf(startinglocation) != -1, value: item }, map), {});
                 }
                 drawGJ();
                 if (callback && (typeof callback == "function")) callback();
